@@ -7,27 +7,27 @@
  */
 package org.openhab.binding.controlbyweb.internal;
 
-import static org.openhab.binding.controlbyweb.ControlByWebBindingConstants.*;
+import static org.openhab.binding.controlbyweb.ControlByWebBindingConstants.THING_TYPE_X332;
 
 import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.controlbyweb.handler.ControlByWebHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.controlbyweb.handler.ControlByWebHandler;
 
 /**
- * The {@link ControlByWebHandlerFactory} is responsible for creating things and thing 
+ * The {@link ControlByWebHandlerFactory} is responsible for creating things and thing
  * handlers.
- * 
+ *
  * @author Scott Linton - Initial contribution
  */
 public class ControlByWebHandlerFactory extends BaseThingHandlerFactory {
-    
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
-    
+
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_X332);
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -38,11 +38,10 @@ public class ControlByWebHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
+        if (thingTypeUID.equals(THING_TYPE_X332)) {
             return new ControlByWebHandler(thing);
         }
 
         return null;
     }
 }
-

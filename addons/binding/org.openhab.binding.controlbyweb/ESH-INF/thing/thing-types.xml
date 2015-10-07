@@ -1,24 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="controlbyweb"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
     <!-- Sample Thing Type -->
-    <thing-type id="sample">
-        <label>ControlByWeb Binding Thing</label>
-        <description>Sample thing for ControlByWeb Binding</description>
+    <thing-type id="x332">
+        <label>ControlByWeb X-332 Advanced I/O Controller</label>
+        <description>ControlByWeb X-332 | Web-Enabled Advanced I/O Controller</description>
 
         <channels>
-            <channel id="channel1" typeId="sample-channel"/>
+            <channel id="input1" typeId="input" />
+            <channel id="input2" typeId="input" />
+            <channel id="input3" typeId="input" />
+            <channel id="output1" typeId="output" />
+            <channel id="output2" typeId="output" />
+            <channel id="output3" typeId="output" />
         </channels>
+
+        <config-description>
+            <parameter name="ipAddress" type="text">
+                <label>IP Address</label>
+                <description>IP Address of ControlByWeb Unit</description>
+                <required>true</required>
+            </parameter>
+
+            <parameter name="refresh" type="integer">
+                <label>Refresh interval</label>
+                <description>Specifies the refresh interval in seconds</description>
+                <default>60</default>
+            </parameter>
+        </config-description>
     </thing-type>
 
-    <!-- Sample Channel Type -->
-    <channel-type id="sample-channel">
-        <item-type>controlbywebItem</item-type>
-        <label>ControlByWeb Binding Channel</label>
-        <description>Sample channel for ControlByWeb Binding</description>
+    <!-- Input Channel Type -->
+    <channel-type id="input">
+        <item-type>Switch</item-type>
+        <label>ControlByWeb Input Channel</label>
+        <description>Input channel for ControlByWeb Relay</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <!-- Output Channel Type -->
+    <channel-type id="output">
+        <item-type>Switch</item-type>
+        <label>ControlByWeb Output Channel</label>
+        <description>Output channel for ControlByWeb Relay</description>
     </channel-type>
 
 </thing:thing-descriptions>
