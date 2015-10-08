@@ -10,7 +10,6 @@ package org.openhab.binding.controlbyweb.handler;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.InetAddress;
-import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -20,13 +19,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.controlbyweb.ControlByWebBindingConstants;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.controlbyweb.config.ControlByWebConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,26 +66,25 @@ public class ControlByWebHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(ControlByWebBindingConstants.CHANNEL_OUTPUT_1)) {
-            // TODO: handle command
+        // if (channelUID.getId().equals(ControlByWebBindingConstants.CHANNEL_RELAY_1)) {
+        // TODO: handle command
 
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        }
+        // Note: if communication with thing fails for some reason,
+        // indicate that by setting the status with detail information
+        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        // "Could not control device at IP address x.x.x.x");
+        // }
     }
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.INITIALIZING);
         logger.debug("Initializing ControlByWeb handler.");
         ControlByWebConfiguration configuration = getConfigAs(ControlByWebConfiguration.class);
         logger.debug("ControlByWeb IP {}.", configuration.ipAddress);
         if (configuration.ipAddress == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Can not access device as ip address is invalid");
-            logger.warn("Can not access device as ip address is invalid");
+                    "Can not access device. IP address \"" + configuration.ipAddress + "\" is invalid");
+            logger.warn("Can not access device. IP address \"" + configuration.ipAddress + "\" is invalid");
             return;
         } else if ("127.0.0.1".equals(configuration.ipAddress) || "localhost".equals(configuration.ipAddress)) {
             ipAddress = InetAddress.getLoopbackAddress();
@@ -112,7 +111,7 @@ public class ControlByWebHandler extends BaseThingHandler {
 
         // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
-        updateStatus(ThingStatus.ONLINE);
+        // updateStatus(ThingStatus.ONLINE);
 
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.
@@ -122,7 +121,7 @@ public class ControlByWebHandler extends BaseThingHandler {
         // "Can not access device as username and/or password are invalid");
     }
 
-    protected void updateDeviceStatus() throws URISyntaxException {
+    protected void updateDeviceStatus() throws Exception {
 
         // UriBuilder uriBuilder = UriBuilder.fromPath(ipAddress.toString()).scheme("http").path("state.xml");
 
@@ -135,20 +134,32 @@ public class ControlByWebHandler extends BaseThingHandler {
             builder = domFactory.newDocumentBuilder();
 
             doc = builder.parse(uri.toString());
-        } catch (SAXException | IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (SAXException | IOException | ParserConfigurationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Cannot load status.xml from device");
+            throw e;
+        }
+        if (doc.getElementsByTagName("datavalues").getLength() == 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Cannot load status.xml from device");
+        }
+        updateStatus(ThingStatus.ONLINE);
+        String inputStates = doc.getElementsByTagName("inputstates").item(0).getFirstChild().getTextContent();
+        for (int i = 1; i < inputStates.length(); i++) {
+            State state = inputStates.charAt(inputStates.length() - i) == '1' ? OnOffType.ON : OnOffType.OFF;
+            updateState(new ChannelUID(getThing().getUID(), "input" + i), state);
+            logger.trace("Updating input {} to {}", i, state.toString());
         }
 
-        String inputStates = doc.getElementsByTagName("inputstates").item(0).getFirstChild().getTextContent();
-
         String relayStates = doc.getElementsByTagName("relaystates").item(0).getFirstChild().getTextContent();
-
+        for (int i = 1; i <= relayStates.length(); i++) {
+            State state = relayStates.charAt(relayStates.length() - i) == '1' ? OnOffType.ON : OnOffType.OFF;
+            updateState(new ChannelUID(getThing().getUID(), "relay" + i), state);
+            logger.trace("Updating relay {} to {}", i, state.toString());
+        }
         // XPath xpath = XPathFactory.newInstance().newXPath();
         // XPath Query for showing all nodes value
 
     }
+
 }

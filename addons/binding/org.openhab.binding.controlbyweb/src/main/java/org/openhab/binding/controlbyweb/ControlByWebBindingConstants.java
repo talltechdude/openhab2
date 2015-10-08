@@ -29,11 +29,31 @@ public class ControlByWebBindingConstants {
     public final static String CHANNEL_INPUT_4 = "input4";
     public final static String CHANNEL_INPUT_5 = "input5";
     public final static String CHANNEL_INPUT_6 = "input6";
+    public final static String CHANNEL_INPUT_7 = "input7";
+    public final static String CHANNEL_INPUT_8 = "input8";
+    public final static String CHANNEL_INPUT_9 = "input9";
+    public final static String CHANNEL_INPUT_10 = "input10";
+    public final static String CHANNEL_INPUT_11 = "input11";
+    public final static String CHANNEL_INPUT_12 = "input12";
+    public final static String CHANNEL_INPUT_13 = "input13";
+    public final static String CHANNEL_INPUT_14 = "input14";
+    public final static String CHANNEL_INPUT_15 = "input15";
+    public final static String CHANNEL_INPUT_16 = "input16";
 
-    public final static String CHANNEL_OUTPUT_1 = "output1";
-    public final static String CHANNEL_OUTPUT_2 = "output2";
-    public final static String CHANNEL_OUTPUT_3 = "output3";
-    public final static String CHANNEL_OUTPUT_4 = "output4";
-    public final static String CHANNEL_OUTPUT_5 = "output5";
-    public final static String CHANNEL_OUTPUT_6 = "output6";
+    public final static String CHANNEL_RELAY_1 = "relay1";
+    public final static String CHANNEL_RELAY_2 = "relay2";
+    public final static String CHANNEL_RELAY_3 = "relay3";
+    public final static String CHANNEL_RELAY_4 = "relay4";
+    public final static String CHANNEL_RELAY_5 = "relay5";
+    public final static String CHANNEL_RELAY_6 = "relay6";
+    public final static String CHANNEL_RELAY_7 = "relay7";
+    public final static String CHANNEL_RELAY_8 = "relay8";
+    public final static String CHANNEL_RELAY_9 = "relay9";
+    public final static String CHANNEL_RELAY_10 = "relay10";
+    public final static String CHANNEL_RELAY_11 = "relay11";
+    public final static String CHANNEL_RELAY_12 = "relay12";
+    public final static String CHANNEL_RELAY_13 = "relay13";
+    public final static String CHANNEL_RELAY_14 = "relay14";
+    public final static String CHANNEL_RELAY_15 = "relay15";
+    public final static String CHANNEL_RELAY_16 = "relay16";
 }

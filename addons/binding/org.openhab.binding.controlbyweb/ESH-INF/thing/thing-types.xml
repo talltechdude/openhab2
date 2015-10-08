@@ -13,9 +13,35 @@
             <channel id="input1" typeId="input" />
             <channel id="input2" typeId="input" />
             <channel id="input3" typeId="input" />
-            <channel id="output1" typeId="output" />
-            <channel id="output2" typeId="output" />
-            <channel id="output3" typeId="output" />
+            <channel id="input4" typeId="input" />
+            <channel id="input5" typeId="input" />
+            <channel id="input6" typeId="input" />
+            <channel id="input7" typeId="input" />
+            <channel id="input8" typeId="input" />
+            <channel id="input9" typeId="input" />
+            <channel id="input10" typeId="input" />
+            <channel id="input11" typeId="input" />
+            <channel id="input12" typeId="input" />
+            <channel id="input13" typeId="input" />
+            <channel id="input14" typeId="input" />
+            <channel id="input15" typeId="input" />
+			<channel id="input16" typeId="input" />
+			<channel id="relay1" typeId="relay" />
+			<channel id="relay2" typeId="relay" />
+			<channel id="relay3" typeId="relay" />
+			<channel id="relay4" typeId="relay" />
+			<channel id="relay5" typeId="relay" />
+			<channel id="relay6" typeId="relay" />
+			<channel id="relay7" typeId="relay" />
+			<channel id="relay8" typeId="relay" />
+			<channel id="relay9" typeId="relay" />
+			<channel id="relay10" typeId="relay" />
+			<channel id="relay11" typeId="relay" />
+			<channel id="relay12" typeId="relay" />
+			<channel id="relay13" typeId="relay" />
+			<channel id="relay14" typeId="relay" />
+			<channel id="relay15" typeId="relay" />
+			<channel id="relay16" typeId="relay" /> 
         </channels>
 
         <config-description>
@@ -28,7 +54,7 @@
             <parameter name="refresh" type="integer">
                 <label>Refresh interval</label>
                 <description>Specifies the refresh interval in seconds</description>
-                <default>60</default>
+                <default>20</default>
             </parameter>
         </config-description>
     </thing-type>
@@ -42,10 +68,10 @@
     </channel-type>
 
     <!-- Output Channel Type -->
-    <channel-type id="output">
+    <channel-type id="relay">
         <item-type>Switch</item-type>
-        <label>ControlByWeb Output Channel</label>
-        <description>Output channel for ControlByWeb Relay</description>
+        <label>ControlByWeb Output Relay</label>
+        <description>Relay channel for ControlByWeb Relay</description>
     </channel-type>
 
 </thing:thing-descriptions>
