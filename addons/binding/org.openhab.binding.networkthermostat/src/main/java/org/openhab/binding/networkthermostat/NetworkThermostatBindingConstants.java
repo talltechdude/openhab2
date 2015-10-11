@@ -10,19 +10,37 @@ package org.openhab.binding.networkthermostat;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link NetworkThermostatBinding} class defines common constants, which are 
+ * The {@link NetworkThermostatBinding} class defines common constants, which are
  * used across the whole binding.
- * 
+ *
  * @author Scott Linton - Initial contribution
  */
 public class NetworkThermostatBindingConstants {
 
     public static final String BINDING_ID = "networkthermostat";
-    
+
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public final static ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
 
     // List of all Channel ids
-    public final static String CHANNEL_1 = "channel1";
+    public final static String CHANNEL_COOL_SETPOINT = "cool_setpoint";
+    public final static String CHANNEL_HEAT_SETPOINT = "heat_setpoint";
+
+    public final static String CHANNEL_MODE = "mode";
+    public final static String CHANNEL_FAN_MODE = "fan_mode";
+    public final static String CHANNEL_INDOOR_TEMP = "indoor_temp";
+    public final static String CHANNEL_OUTDOOR_TEMP = "outdoor_temp";
+    public final static String CHANNEL_COMPRESSOR_MODE = "compressor_mode";
+    public final static String CHANNEL_COMPRESSOR_STAGE = "compressor_stage";
+
+    /*
+     * <channel id="cool_setpoint" typeId="setpoint"/>
+     * <channel id="heat_setpoint" typeId="setpoint"/>
+     * <channel id="mode" typeId="mode"/>
+     * <channel id="indoor_temp" typeId="current_temp"/>
+     * <channel id="outdoor_temp" typeId="current_temp"/>
+     * <channel id="compressor_mode" typeId="compressor_mode"/>
+     * <channel id="compressor_stage" typeId="compressor_stage"/>
+     */
 
 }

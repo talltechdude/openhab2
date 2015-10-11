@@ -7,27 +7,27 @@
  */
 package org.openhab.binding.networkthermostat.internal;
 
-import static org.openhab.binding.networkthermostat.NetworkThermostatBindingConstants.*;
+import static org.openhab.binding.networkthermostat.NetworkThermostatBindingConstants.THING_TYPE_THERMOSTAT;
 
 import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.networkthermostat.handler.NetworkThermostatHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.networkthermostat.handler.NetworkThermostatHandler;
 
 /**
- * The {@link NetworkThermostatHandlerFactory} is responsible for creating things and thing 
+ * The {@link NetworkThermostatHandlerFactory} is responsible for creating things and thing
  * handlers.
- * 
+ *
  * @author Scott Linton - Initial contribution
  */
 public class NetworkThermostatHandlerFactory extends BaseThingHandlerFactory {
-    
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
-    
+
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_THERMOSTAT);
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -38,11 +38,10 @@ public class NetworkThermostatHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
+        if (thingTypeUID.equals(THING_TYPE_THERMOSTAT)) {
             return new NetworkThermostatHandler(thing);
         }
 
         return null;
     }
 }
-

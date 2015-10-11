@@ -1,0 +1,16 @@
+Group NT       "NT"       <heating>           [ "home-group" ]
+
+
+Number CoolSetpoint "Cool Setpoint [%f °C]" <heating> (NT) { channel="networkthermostat:thermostat:test:cool_setpoint" }
+
+Number HeatSetpoint "Heat Setpoint [%f °C]" <heating> (NT) { channel="networkthermostat:thermostat:test:heat_setpoint" }
+
+String Mode "Mode" <heating> (NT) { channel="networkthermostat:thermostat:test:mode" }
+String FanMode "Fan Mode" <heating> (NT) { channel="networkthermostat:thermostat:test:fan_mode" }
+
+Number IndoorTemp "Indoor Temperature [$f.0 °C]" <heating> (NT) { channel="networkthermostat:thermostat:test:indoor_temp" }
+Number OutdoorTemp "Outdoor Temperature [$f.0 °C]" <heating> (NT) { channel="networkthermostat:thermostat:test:outdoor_temp" }
+
+
+String CompMode "Compressor Mode" <heating> (NT) { channel="networkthermostat:thermostat:test:compressor_mode" }
+String CompStage "Compressor Stage" <heating> (NT) { channel="networkthermostat:thermostat:test:compressor_stage" }

@@ -4,21 +4,108 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Sample Thing Type -->
-    <thing-type id="sample">
-        <label>NetworkThermostat Binding Thing</label>
-        <description>Sample thing for NetworkThermostat Binding</description>
+    <!-- Network Thermostat Thing -->
+    <thing-type id="thermostat">
+        <label>Network Thermostat Thing</label>
+        <description>Thing representing a single NetworkThermostat</description>
 
         <channels>
-            <channel id="channel1" typeId="sample-channel"/>
+            <channel id="cool_setpoint" typeId="setpoint"/>
+            <channel id="heat_setpoint" typeId="setpoint"/>
+            <channel id="mode" typeId="mode"/>
+            <channel id="fan_mode" typeId="fan_mode"/>
+            <channel id="indoor_temp" typeId="current_temp"/>
+            <channel id="outdoor_temp" typeId="current_temp"/>
+            <channel id="compressor_mode" typeId="compressor_mode"/>
+            <channel id="compressor_stage" typeId="compressor_stage"/>
         </channels>
+        
+        <config-description>
+            <parameter name="ipAddress" type="text">
+                <label>IP Address</label>
+                <description>IP Address of Network Thermostat Unit</description>
+                <required>true</required>
+            </parameter>
+
+            <parameter name="refresh" type="integer">
+                <label>Refresh interval</label>
+                <description>Specifies the refresh interval in seconds</description>
+                <default>20</default>
+            </parameter>
+        </config-description>
     </thing-type>
 
-    <!-- Sample Channel Type -->
-    <channel-type id="sample-channel">
-        <item-type>networkthermostatItem</item-type>
-        <label>NetworkThermostat Binding Channel</label>
+    <!-- Setpoint Channel Type -->
+    <channel-type id="setpoint">
+        <item-type>Number</item-type>
+        <label>Setpoint</label>
         <description>Sample channel for NetworkThermostat Binding</description>
+        <state min="16" max="40" step="1" pattern="%d °C" readOnly="false">
+        </state>
     </channel-type>
+    
+    <channel-type id="mode">
+        <item-type>String</item-type>
+        <label>Mode</label>
+        <description>Thermostat Mode Setting</description>
+        <state readOnly="false">
+            <options>
+                <option value="AUTO">Automatic</option>
+                <option value="COOL">Cooling</option>
+                <option value="HEAT">Heating</option>
+                <option value="EHEAT">Emergency Heating</option>
+                <option value="OFF">Off</option>
+            </options>
+        </state>
+    </channel-type>
+    
+        <channel-type id="fan_mode">
+        <item-type>String</item-type>
+        <label>Fan Mode</label>
+        <description>Fan Mode Setting</description>
+        <state readOnly="false">
+            <options>
+                <option value="AUTO">Automatic</option>
+                <option value="ON">Fan On</option>
+                <option value="RECIRC">Recirculating</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="current_temp">
+        <item-type>Number</item-type>
+        <label>Current Temperature</label>
+        <description>Current measured room temperature</description>
+        <category>Temperature</category>
+        <state pattern="%d °C" readOnly="true">
+        </state>
+    </channel-type>
+    
+    <channel-type id="compressor_mode">
+        <item-type>String</item-type>
+        <label>Compressor Mode</label>
+        <description>Current Compressor Mode</description>
+        <state readOnly="true">
+            <options>
+                <option value="HEAT">Heat</option>
+                <option value="COOL">Cool</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="compressor_stage">
+        <item-type>String</item-type>
+        <label>Compressor Stage</label>
+        <description>Current Compressor Stage</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">Stage 1</option>
+                <option value="2">Stage 2</option>
+                <option value="3">Stage 3</option>
+            </options>
+        </state>
+    </channel-type>
+
 
 </thing:thing-descriptions>
