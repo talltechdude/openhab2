@@ -8,9 +8,10 @@
 package org.openhab.binding.controlbyweb.handler;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -18,8 +19,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -66,14 +67,30 @@ public class ControlByWebHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // if (channelUID.getId().equals(ControlByWebBindingConstants.CHANNEL_RELAY_1)) {
-        // TODO: handle command
-
-        // Note: if communication with thing fails for some reason,
-        // indicate that by setting the status with detail information
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // "Could not control device at IP address x.x.x.x");
-        // }
+        if (channelUID.getId().startsWith("relay")) {
+            String relayNumber = channelUID.getId().replace("relay", "");
+            String url = "http://" + ipAddress.getHostAddress() + "/state.xml?relay" + relayNumber + "State=";
+            if (command.equals(OnOffType.ON)) {
+                url += "1";
+            } else if (command.equals(OnOffType.OFF)) {
+                url += "0";
+            }
+            Scanner scanner = null;
+            try {
+                scanner = new Scanner(new URL(url).openStream(), "UTF-8");
+                if (scanner.hasNext()) {
+                    String response = scanner.useDelimiter("\\A").next();
+                    logger.trace("Turning {} relay {}: {}", command.toString(), relayNumber, response);
+                }
+            } catch (IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Cannot execute relay command");
+                logger.debug("Exception executing relay command: {}", e);
+            } finally {
+                if (scanner != null)
+                    scanner.close();
+            }
+        }
     }
 
     @Override
@@ -99,32 +116,16 @@ public class ControlByWebHandler extends BaseThingHandler {
         }
 
         if (pollingJob == null || pollingJob.isCancelled()) {
-            Configuration config = getThing().getConfiguration();
-            // use default if not specified
+            // use default refresh interval if not specified
             int refreshInterval = DEFAULT_REFRESH_INTERVAL;
-            Object refreshConfig = config.get(ControlByWebConfiguration.REFRESH);
-            if (refreshConfig != null) {
-                refreshInterval = ((BigDecimal) refreshConfig).intValue();
+            if (configuration.refresh != null) {
+                refreshInterval = configuration.refresh;
             }
             pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
         }
-
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
-        // updateStatus(ThingStatus.ONLINE);
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
     protected void updateDeviceStatus() throws Exception {
-
-        // UriBuilder uriBuilder = UriBuilder.fromPath(ipAddress.toString()).scheme("http").path("state.xml");
-
         String uri = "http://" + ipAddress.getHostAddress() + "/state.xml";
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
         domFactory.setNamespaceAware(true);
@@ -132,7 +133,6 @@ public class ControlByWebHandler extends BaseThingHandler {
         Document doc = null;
         try {
             builder = domFactory.newDocumentBuilder();
-
             doc = builder.parse(uri.toString());
         } catch (SAXException | IOException | ParserConfigurationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -146,7 +146,8 @@ public class ControlByWebHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
         String inputStates = doc.getElementsByTagName("inputstates").item(0).getFirstChild().getTextContent();
         for (int i = 1; i < inputStates.length(); i++) {
-            State state = inputStates.charAt(inputStates.length() - i) == '1' ? OnOffType.ON : OnOffType.OFF;
+            State state = new StringType(inputStates.charAt(inputStates.length() - i) == '1' ? OnOffType.ON.toString()
+                    : OnOffType.OFF.toString());
             updateState(new ChannelUID(getThing().getUID(), "input" + i), state);
             logger.trace("Updating input {} to {}", i, state.toString());
         }
@@ -157,9 +158,6 @@ public class ControlByWebHandler extends BaseThingHandler {
             updateState(new ChannelUID(getThing().getUID(), "relay" + i), state);
             logger.trace("Updating relay {} to {}", i, state.toString());
         }
-        // XPath xpath = XPathFactory.newInstance().newXPath();
-        // XPath Query for showing all nodes value
-
     }
 
 }

@@ -1,0 +1,34 @@
+Group CBW	 		"CBW"			<heating>		[ "home-group" ]
+String Input1 "Input 1"   (CBW) { channel="controlbyweb:x332:aircon:input1" }
+String Input2 "Input 2"   (CBW) { channel="controlbyweb:x332:aircon:input2" }
+String Input3 "Input 3"   (CBW) { channel="controlbyweb:x332:aircon:input3" }
+String Input4 "Input 4"   (CBW) { channel="controlbyweb:x332:aircon:input4" }
+String Input5 "Input 5"   (CBW) { channel="controlbyweb:x332:aircon:input5" }
+String Input6 "Input 6"   (CBW) { channel="controlbyweb:x332:aircon:input6" }
+String Input7 "Input 7"   (CBW) { channel="controlbyweb:x332:aircon:input7" }
+String Input8 "Input 8"   (CBW) { channel="controlbyweb:x332:aircon:input8" }
+String Input9 "Input 9"   (CBW) { channel="controlbyweb:x332:aircon:input9" }
+String Input10 "Input 10"   (CBW) { channel="controlbyweb:x332:aircon:input10" }
+String Input11 "Input 11"   (CBW) { channel="controlbyweb:x332:aircon:input11" }
+String Input12 "Input 12"   (CBW) { channel="controlbyweb:x332:aircon:input12" }
+String Input13 "Input 13"   (CBW) { channel="controlbyweb:x332:aircon:input13" }
+String Input14 "Input 14"   (CBW) { channel="controlbyweb:x332:aircon:input14" }
+String Input15 "Input 15"   (CBW) { channel="controlbyweb:x332:aircon:input15" }
+String Input16 "Input 16"   (CBW) { channel="controlbyweb:x332:aircon:input16" }
+
+Switch Relay1 "Relay 1"   (CBW) { channel="controlbyweb:x332:aircon:relay1" }
+Switch Relay2 "Relay 2"   (CBW) { channel="controlbyweb:x332:aircon:relay2" }
+Switch Relay3 "Relay 3"   (CBW) { channel="controlbyweb:x332:aircon:relay3" }
+Switch Relay4 "Relay 4"   (CBW) { channel="controlbyweb:x332:aircon:relay4" }
+Switch Relay5 "Relay 5"   (CBW) { channel="controlbyweb:x332:aircon:relay5" }
+Switch Relay6 "Relay 6"   (CBW) { channel="controlbyweb:x332:aircon:relay6" }
+Switch Relay7 "Relay 7"   (CBW) { channel="controlbyweb:x332:aircon:relay7" }
+Switch Relay8 "Relay 8"   (CBW) { channel="controlbyweb:x332:aircon:relay8" }
+Switch Relay9 "Relay 9"   (CBW) { channel="controlbyweb:x332:aircon:relay9" }
+Switch Relay10 "Relay 10"   (CBW) { channel="controlbyweb:x332:aircon:relay10" }
+Switch Relay11 "Relay 11"   (CBW) { channel="controlbyweb:x332:aircon:relay11" }
+Switch Relay12 "Relay 12"   (CBW) { channel="controlbyweb:x332:aircon:relay12" }
+Switch Relay13 "Relay 13"   (CBW) { channel="controlbyweb:x332:aircon:relay13" }
+Switch Relay14 "Relay 14"   (CBW) { channel="controlbyweb:x332:aircon:relay14" }
+Switch Relay15 "Relay 15"   (CBW) { channel="controlbyweb:x332:aircon:relay15" }
+Switch Relay16 "Relay 16"   (CBW) { channel="controlbyweb:x332:aircon:relay16" }
