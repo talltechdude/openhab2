@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -72,6 +73,7 @@ public class NetworkThermostatHandler extends BaseThingHandler {
 
     protected void updateThermostatStatus() {
         String result = sendCommand("RAS1");
+        logger.trace("RAS1: {}", result);
         // Indoor Temp, Outdoor Temp, Mode, Fan, Override, Recovery, Cool Setpoint, Heat Setpoint, Status, Stages
         String[] values = result.substring(5).split(",");
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_INDOOR_TEMP),
@@ -84,6 +86,8 @@ public class NetworkThermostatHandler extends BaseThingHandler {
         }
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_MODE), new StringType(values[2]));
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_FAN_MODE), new StringType(values[3].substring(4)));
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_OVERRIDE),
+                "YES".equals(values[4]) ? OnOffType.ON : OnOffType.OFF);
 
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_COOL_SETPOINT),
                 new DecimalType(Double.parseDouble(values[6])));
@@ -91,6 +95,21 @@ public class NetworkThermostatHandler extends BaseThingHandler {
                 new DecimalType(Double.parseDouble(values[7])));
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_COMPRESSOR_MODE), new StringType(values[8]));
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_COMPRESSOR_STAGE), new StringType(values[9]));
+
+        result = sendCommand("RAOS1"); // RAOS1:15-10-15,17:27:53,0:00,0:0:00,TH3,DISABLED
+        logger.trace("RAOS1: {}", result);
+        values = result.substring(6).split(",");
+        String override[] = values[2].split(":");
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_OVERRIDE_TIMER),
+                new DecimalType(Integer.parseInt(override[0]) * 60 + Integer.parseInt(override[1])));
+
+        result = sendCommand("RAAS1"); // RAAS1:YES,NO,NO,NO,NO,YES,NO,NO,NO,NO,NO,YES,NO,NO,NO,NO
+        logger.trace("RAAS1: {}", result);
+        values = result.substring(6).split(",");
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_LED1),
+                "YES".equals(values[14]) ? OnOffType.ON : OnOffType.OFF);
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_LED2),
+                "YES".equals(values[15]) ? OnOffType.ON : OnOffType.OFF);
 
         /*
          * <channel id="cool_setpoint" typeId="setpoint"/>
@@ -152,12 +171,18 @@ public class NetworkThermostatHandler extends BaseThingHandler {
             updateThermostatStatus();
         }
         if (channelUID.getId().equals(CHANNEL_COOL_SETPOINT)) {
-            logger.info("Override cool setpoint to {}: {} {}", command.toString(),
-                    sendCommand("WOS1DX,X," + command.toString() + ",X"), sendCommand("WOP1D60"));
+            logger.info("Override cool setpoint to {}: {}", command.toString(),
+                    sendCommand("WOS1DX,X," + command.toString() + ",X"));
+            updateThermostatStatus();
         }
         if (channelUID.getId().equals(CHANNEL_HEAT_SETPOINT)) {
-            logger.info("Override heat setpoint to {}: {} {}", command.toString(),
-                    sendCommand("WOS1DX,X,X," + command.toString()), sendCommand("WOP1D60"));
+            logger.info("Override heat setpoint to {}: {}", command.toString(),
+                    sendCommand("WOS1DX,X,X," + command.toString()));
+            updateThermostatStatus();
+        }
+        if (channelUID.getId().equals(CHANNEL_OVERRIDE) && command.equals(OnOffType.OFF)) {
+            logger.info("Cancel override: {}", sendCommand("WOR1D0:00"));
+            updateThermostatStatus();
         }
     }
 

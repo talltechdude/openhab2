@@ -18,6 +18,10 @@
             <channel id="outdoor_temp" typeId="current_temp"/>
             <channel id="compressor_mode" typeId="compressor_mode"/>
             <channel id="compressor_stage" typeId="compressor_stage"/>
+            <channel id="override_timer" typeId="override_timer"/>
+            <channel id="override" typeId="override"/>
+            <channel id="led1" typeId="led"/>
+            <channel id="led2" typeId="led"/>
         </channels>
         
         <config-description>
@@ -39,8 +43,8 @@
     <channel-type id="setpoint">
         <item-type>Number</item-type>
         <label>Setpoint</label>
-        <description>Sample channel for NetworkThermostat Binding</description>
-        <state min="16" max="40" step="1" pattern="%d °C" readOnly="false">
+        <description>Temperature Setpoint</description>
+        <state min="16" max="38" step="1" pattern="%d °C" readOnly="false">
         </state>
     </channel-type>
     
@@ -107,5 +111,23 @@
         </state>
     </channel-type>
 
-
+    <channel-type id="override_timer">
+        <item-type>Number</item-type>
+        <label>Override Timer</label>
+        <description>Override time left</description>
+        <state pattern="%d mins" readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="override">
+        <item-type>Switch</item-type>
+        <label>Override Active</label>
+        <description>Override active</description>
+        <state readOnly="false" />
+    </channel-type>
+    <channel-type id="led">
+        <item-type>Switch</item-type>
+        <label>LED Indicator</label>
+        <description>LED input active</description>
+        <state readOnly="true" />
+    </channel-type>
 </thing:thing-descriptions>

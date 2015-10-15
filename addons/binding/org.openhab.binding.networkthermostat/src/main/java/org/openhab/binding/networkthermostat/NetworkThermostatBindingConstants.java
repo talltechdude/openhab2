@@ -32,7 +32,10 @@ public class NetworkThermostatBindingConstants {
     public final static String CHANNEL_OUTDOOR_TEMP = "outdoor_temp";
     public final static String CHANNEL_COMPRESSOR_MODE = "compressor_mode";
     public final static String CHANNEL_COMPRESSOR_STAGE = "compressor_stage";
-
+    public final static String CHANNEL_OVERRIDE_TIMER = "override_timer";
+    public final static String CHANNEL_OVERRIDE = "override";
+    public final static String CHANNEL_LED1 = "led1";
+    public final static String CHANNEL_LED2 = "led2";
     /*
      * <channel id="cool_setpoint" typeId="setpoint"/>
      * <channel id="heat_setpoint" typeId="setpoint"/>
