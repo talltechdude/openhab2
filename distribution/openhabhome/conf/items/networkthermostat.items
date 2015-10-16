@@ -14,3 +14,10 @@ Number OutdoorTemp "Outdoor Temperature [$f.0 °C]" <heating> (NT) { channel="ne
 
 String CompMode "Compressor Mode" <heating> (NT) { channel="networkthermostat:thermostat:test:compressor_mode" }
 String CompStage "Compressor Stage" <heating> (NT) { channel="networkthermostat:thermostat:test:compressor_stage" }
+
+Number OverrideTimer "Override timer [$f.0]" <heating> (NT) { channel="networkthermostat:thermostat:test:override_timer" }
+
+Switch OverrideActive "Override Active [MAP(yesno.map):%s]" <heating> (NT) { channel="networkthermostat:thermostat:test:override" }
+
+Switch LED1 "Alert 1" <heating> (NT) { channel="networkthermostat:thermostat:test:led1" }
+Switch LED2 "Alert 2" <heating> (NT) { channel="networkthermostat:thermostat:test:led2" }
