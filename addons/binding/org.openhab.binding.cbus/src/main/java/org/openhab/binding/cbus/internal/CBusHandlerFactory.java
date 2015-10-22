@@ -7,30 +7,33 @@
  */
 package org.openhab.binding.cbus.internal;
 
-import static org.openhab.binding.cbus.CBusBindingConstants.*;
+import java.util.Hashtable;
 
-import java.util.Collections;
-import java.util.Set;
-
-import org.openhab.binding.cbus.handler.CBusHandler;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.cbus.CBusBindingConstants;
+import org.openhab.binding.cbus.handler.CBusCGateHandler;
+import org.openhab.binding.cbus.handler.CBusGroupHandler;
+import org.openhab.binding.cbus.handler.CBusLightHandler;
+import org.openhab.binding.cbus.handler.CBusNetworkHandler;
+import org.openhab.binding.cbus.internal.discovery.CBusGroupDiscovery;
+import org.openhab.binding.cbus.internal.discovery.CBusNetworkDiscovery;
 
 /**
- * The {@link CBusHandlerFactory} is responsible for creating things and thing 
+ * The {@link CBusHandlerFactory} is responsible for creating things and thing
  * handlers.
- * 
+ *
  * @author Scott Linton - Initial contribution
  */
 public class CBusHandlerFactory extends BaseThingHandlerFactory {
-    
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
-    
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return CBusBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
@@ -38,11 +41,39 @@ public class CBusHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
-            return new CBusHandler(thing);
+        if (thingTypeUID.equals(CBusBindingConstants.BRIDGE_TYPE_CGATE)) {
+            CBusCGateHandler handler = new CBusCGateHandler((Bridge) thing);
+            registerDeviceDiscoveryService(handler);
+            return handler;
         }
 
+        if (thingTypeUID.equals(CBusBindingConstants.BRIDGE_TYPE_NETWORK)) {
+            CBusNetworkHandler handler = new CBusNetworkHandler((Bridge) thing);
+            registerDeviceDiscoveryService(handler);
+            return handler;
+        }
+
+        if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_GROUP)) {
+            return new CBusGroupHandler(thing);
+        }
+
+        if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_LIGHT)) {
+            return new CBusLightHandler(thing);
+        }
         return null;
     }
-}
 
+    private void registerDeviceDiscoveryService(CBusCGateHandler cbusCgateHandler) {
+        CBusNetworkDiscovery discoveryService = new CBusNetworkDiscovery(cbusCgateHandler);
+        discoveryService.activate();
+        super.bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+                new Hashtable<String, Object>());
+    }
+
+    private void registerDeviceDiscoveryService(CBusNetworkHandler cbusNetworkHandler) {
+        CBusGroupDiscovery discoveryService = new CBusGroupDiscovery(cbusNetworkHandler);
+        discoveryService.activate();
+        bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+                new Hashtable<String, Object>());
+    }
+}

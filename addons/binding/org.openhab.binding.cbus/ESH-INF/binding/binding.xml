@@ -4,8 +4,8 @@
         xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-    <name>CBus Binding</name>
-    <description>This is the binding for CBus.</description>
+    <name>C-Bus Binding</name>
+    <description>Clipsal C-Bus Binding</description>
     <author>Scott Linton</author>
 
 </binding:binding>

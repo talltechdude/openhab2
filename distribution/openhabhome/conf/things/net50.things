@@ -1,0 +1,25 @@
+Thing cbus:light:net50:Admin_Security              (cbus:network:evbms01:net50)     [ group=1 ]
+Thing cbus:light:net50:Admin_Access                (cbus:network:evbms01:net50)     [ group=2 ]
+Thing cbus:light:net50:Admin_Carpark               (cbus:network:evbms01:net50)     [ group=3 ]
+
+Thing cbus:light:net50:Admin_Reception             (cbus:network:evbms01:net50)     [ group=20 ]
+Thing cbus:light:net50:Admin_Rear                  (cbus:network:evbms01:net50)     [ group=21 ]
+Thing cbus:light:net50:Admin_Kitchen               (cbus:network:evbms01:net50)     [ group=22 ]
+Thing cbus:light:net50:Admin_Toilet                (cbus:network:evbms01:net50)     [ group=23 ]
+
+Thing cbus:light:net50:Admin_Office_1              (cbus:network:evbms01:net50)     [ group=31 ]
+Thing cbus:light:net50:Admin_Office_2              (cbus:network:evbms01:net50)     [ group=32 ]
+Thing cbus:light:net50:Admin_Office_3              (cbus:network:evbms01:net50)     [ group=33 ]
+Thing cbus:light:net50:Admin_Office_4              (cbus:network:evbms01:net50)     [ group=34 ]
+
+Thing cbus:light:net50:Admin_DML_Office_1          (cbus:network:evbms01:net50)     [ group=41 ]
+Thing cbus:light:net50:Admin_DML_Office_2          (cbus:network:evbms01:net50)     [ group=42 ]
+Thing cbus:light:net50:Admin_DML_Office_3          (cbus:network:evbms01:net50)     [ group=43 ]
+Thing cbus:light:net50:Admin_DML_Office_4          (cbus:network:evbms01:net50)     [ group=44 ]
+
+Thing cbus:light:net50:Admin_DMS_Office_1          (cbus:network:evbms01:net50)     [ group=51 ]
+Thing cbus:light:net50:Admin_DMS_Office_2          (cbus:network:evbms01:net50)     [ group=52 ]
+
+Thing cbus:light:net50:Admin_Toilet_Exhaust        (cbus:network:evbms01:net50)     [ group=60 ]
+
+Thing cbus:light:net50:Admin_ENA_PIR_Outdoor       (cbus:network:evbms01:net50)     [ group=100 ]

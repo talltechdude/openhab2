@@ -7,41 +7,44 @@
  */
 package org.openhab.binding.cbus.handler;
 
-import static org.openhab.binding.cbus.CBusBindingConstants.*;
-
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.cbus.CBusBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link CBusHandler} is responsible for handling commands, which are
+ * The {@link CBusGroupHandler} is responsible for handling commands, which are
  * sent to one of the channels.
- * 
+ *
  * @author Scott Linton - Initial contribution
  */
-public class CBusHandler extends BaseThingHandler {
+public class CBusGroupHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(CBusHandler.class);
+    private Logger logger = LoggerFactory.getLogger(CBusGroupHandler.class);
 
-	public CBusHandler(Thing thing) {
-		super(thing);
-	}
+    public CBusGroupHandler(Thing thing) {
+        super(thing);
+    }
 
-	@Override
-	public void handleCommand(ChannelUID channelUID, Command command) {
-        if(channelUID.getId().equals(CHANNEL_1)) {
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_LEVEL)) {
+            logger.info("Channel command {}: {}", channelUID.getAsString(), command.toString());
         }
-	}
+
+        // if(channelUID.getId().equals(CHANNEL_1)) {
+        // TODO: handle command
+
+        // Note: if communication with thing fails for some reason,
+        // indicate that by setting the status with detail information
+        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        // "Could not control device at IP address x.x.x.x");
+        // }
+    }
 
     @Override
     public void initialize() {
