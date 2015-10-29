@@ -40,6 +40,8 @@ public class CGateCommandSocket extends CGateSocket {
     @Override
     public void parseLine(String line) {
         logger.info("Line received: {}", line);
+        if (line == null)
+            return;
         if (line.charAt(0) == '[') {
             // Response to command
             String id = line.substring(1, line.indexOf(']'));

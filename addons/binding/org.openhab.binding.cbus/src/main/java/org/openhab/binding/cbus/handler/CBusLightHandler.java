@@ -7,14 +7,16 @@
  */
 package org.openhab.binding.cbus.handler;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import serverx.socket.cgate.CGateConnException;
+import serverx.socket.cgate.CGateTimeOutException;
 
 /**
  * The {@link CBusLightHandler} is responsible for handling commands, which are
@@ -22,7 +24,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Scott Linton - Initial contribution
  */
-public class CBusLightHandler extends BaseThingHandler {
+public class CBusLightHandler extends CBusGroupHandler {
 
     private Logger logger = LoggerFactory.getLogger(CBusLightHandler.class);
 
@@ -34,29 +36,28 @@ public class CBusLightHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_STATE)) {
             logger.info("Channel command {}: {}", channelUID.getAsString(), command.toString());
+            if (command instanceof OnOffType) {
+                try {
+                    if (command.equals(OnOffType.ON)) {
+                        commandSet.turnOn(cBusNetworkHandler.getNetworkID(),
+                                CBusBindingConstants.CBUS_APPLICATION_LIGHTING,
+                                getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
+                    } else if (command.equals(OnOffType.OFF)) {
+                        commandSet.turnOff(cBusNetworkHandler.getNetworkID(),
+                                CBusBindingConstants.CBUS_APPLICATION_LIGHTING,
+                                getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
+                    }
+                } catch (CGateConnException | CGateTimeOutException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
         }
-
-        // if(channelUID.getId().equals(CHANNEL_1)) {
-        // TODO: handle command
-
-        // Note: if communication with thing fails for some reason,
-        // indicate that by setting the status with detail information
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // "Could not control device at IP address x.x.x.x");
-        // }
     }
 
     @Override
     public void initialize() {
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
-        updateStatus(ThingStatus.ONLINE);
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+        super.initialize();
     }
+
 }

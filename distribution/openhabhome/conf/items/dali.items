@@ -1,0 +1,14 @@
+Group DALI       "DALI"                 [ "home-group" ]
+Group DALIAuditorium       "DALI Auditorium"
+
+Dimmer    Auditorium_All                      "Auditorium All"                               (CBus,DALI,DALIAuditorium)               { channel="cbus:dali:evbms01:net200:Auditorium_All:level" }
+Dimmer    Auditorium_Front                    "Auditorium Front"                             (CBus,DALI,DALIAuditorium)               { channel="cbus:dali:evbms01:net200:Auditorium_Front:level" }
+Dimmer    Auditorium_Rear                     "Auditorium Rear"                              (CBus,DALI,DALIAuditorium)               { channel="cbus:dali:evbms01:net200:Auditorium_Rear:level" }
+Dimmer    Auditorium_Front_Centre             "Auditorium Front Centre"                      (CBus,DALI,DALIAuditorium)               { channel="cbus:dali:evbms01:net200:Auditorium_Front_Centre:level" }
+Dimmer    Auditorium_Front_Wings              "Auditorium Front Wings"                       (CBus,DALI,DALIAuditorium)               { channel="cbus:dali:evbms01:net200:Auditorium_Front_Wings:level" }
+Dimmer    Auditorium_Entry                    "Auditorium Entry"                             (CBus,DALI,DALIAuditorium)               { channel="cbus:dali:evbms01:net200:Auditorium_Entry:level" }
+Dimmer    Auditorium_Recording                "Auditorium Recording"                         (CBus,DALI,DALIAuditorium)               { channel="cbus:dali:evbms01:net200:Auditorium_Recording:level" }
+Dimmer    Foyer                               "Foyer"                                        (CBus,DALI)                              { channel="cbus:dali:evbms01:net200:Foyer:level" }
+Dimmer    Bookshop                            "Bookshop"                                     (CBus,DALI)                              { channel="cbus:dali:evbms01:net200:Bookshop:level" }
+Dimmer    Kitchen                             "Kitchen"                                      (CBus,DALI)                              { channel="cbus:dali:evbms01:net200:Kitchen:level" }
+Dimmer    Production                          "Production"                                   (CBus,DALI)                              { channel="cbus:dali:evbms01:net200:Production:level" }

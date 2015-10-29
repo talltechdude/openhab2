@@ -1,0 +1,27 @@
+Group Temperature       "Temperature"                <temperature>           [ "home-group" ]
+Group TempOutdoor       "Temperatures Outdoor"       <temperature> 
+Group TempMainHall      "Temperatures Main Hall"     <temperature> 
+Group TempServers       "Temperatures Servers"       <temperature> 
+Group TempProduction    "Temperatures Production"    <temperature> 
+Group TempAuditorium    "Temperatures Auditorium"    <temperature> 
+
+Number    TEMP_Main_Hall_Outdoor              "Main Hall Outdoor"            <temperature>   (CBus,Temperature,TempOutdoor)           { channel="cbus:temperature:evbms01:net100:TEMP_Main_Hall_Outdoor:temp" }
+Number    TEMP_Main_Hall                      "Main Hall"                    <temperature>   (CBus,Temperature,TempMainHall)          { channel="cbus:temperature:evbms01:net100:TEMP_Main_Hall:temp" }
+Number    TEMP_Seminar_Room                   "Seminar Room"                 <temperature>   (CBus,Temperature,TempMainHall)          { channel="cbus:temperature:evbms01:net100:TEMP_Seminar_Room:temp" }
+Number    TEMP_Main_Hall_IT_Room              "Main Hall IT Room"            <temperature>   (CBus,Temperature,TempServers)           { channel="cbus:temperature:evbms01:net101:TEMP_Main_Hall_IT_Room:temp" }
+Number    TEMP_U1                             "U1"                           <temperature>   (CBus,Temperature,TempMainHall)          { channel="cbus:temperature:evbms01:net100:TEMP_U1:temp" }
+Number    TEMP_U2                             "U2"                           <temperature>   (CBus,Temperature,TempMainHall)          { channel="cbus:temperature:evbms01:net100:TEMP_U2:temp" }
+Number    TEMP_U3                             "U3"                           <temperature>   (CBus,Temperature,TempMainHall)          { channel="cbus:temperature:evbms01:net100:TEMP_U3:temp" }
+Number    TEMP_U4                             "U4"                           <temperature>   (CBus,Temperature,TempMainHall)          { channel="cbus:temperature:evbms01:net100:TEMP_U4:temp" }
+Number    TEMP_Auditorium_Outdoor             "Auditorium Outdoor"           <temperature>   (CBus,Temperature,TempOutdoor)           { channel="cbus:temperature:evbms01:net200:TEMP_Auditorium_Outdoor:temp" }
+Number    TEMP_Auditorium_Server_Room         "Auditorium Server Room"       <temperature>   (CBus,Temperature,TempServers)           { channel="cbus:temperature:evbms01:net200:TEMP_Auditorium_Server_Room:temp" }
+Number    TEMP_Green_Room                     "Green Room"                   <temperature>   (CBus,Temperature,TempAuditorium)        { channel="cbus:temperature:evbms01:net200:TEMP_Green_Room:temp" }
+Number    TEMP_Amp_Rack_1                     "Amp Rack 1"                   <temperature>   (CBus,Temperature,TempProduction)        { channel="cbus:temperature:evbms01:net200:TEMP_Amp_Rack_1:temp" }
+Number    TEMP_Amp_Rack_2                     "Amp Rack 2"                   <temperature>   (CBus,Temperature,TempProduction)        { channel="cbus:temperature:evbms01:net200:TEMP_Amp_Rack_2:temp" }
+Number    TEMP_Auditorium_Stage               "Auditorium Stage"             <temperature>   (CBus,Temperature,TempAuditorium)        { channel="cbus:temperature:evbms01:net200:TEMP_Auditorium_Stage:temp" }
+Number    TEMP_Auditorium_Seating             "Auditorium Seating"           <temperature>   (CBus,Temperature,TempAuditorium)        { channel="cbus:temperature:evbms01:net200:TEMP_Auditorium_Seating:temp" }
+Number    TEMP_Parents_Room                   "Parents Room"                 <temperature>   (CBus,Temperature,TempAuditorium)        { channel="cbus:temperature:evbms01:net200:TEMP_Parents_Room:temp" }
+Number    TEMP_Auditorium_Foyer               "Auditorium Foyer"             <temperature>   (CBus,Temperature,TempAuditorium)        { channel="cbus:temperature:evbms01:net200:TEMP_Auditorium_Foyer:temp" }
+Number    TEMP_Production_Rear                "Production Rear"              <temperature>   (CBus,Temperature,TempProduction)        { channel="cbus:temperature:evbms01:net200:TEMP_Production_Rear:temp" }
+Number    TEMP_Production_Desk                "Production Desk"              <temperature>   (CBus,Temperature,TempProduction)        { channel="cbus:temperature:evbms01:net200:TEMP_Production_Desk:temp" }
+Number    TEMP_Auditorium_Store_Room          "Auditorium Store Room"        <temperature>   (CBus,Temperature,TempAuditorium)        { channel="cbus:temperature:evbms01:net200:TEMP_Auditorium_Store_Room:temp" }

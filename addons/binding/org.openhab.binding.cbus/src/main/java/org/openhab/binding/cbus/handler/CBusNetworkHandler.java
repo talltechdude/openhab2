@@ -1,6 +1,7 @@
 package org.openhab.binding.cbus.handler;
 
-import org.eclipse.smarthome.config.core.Configuration;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -11,11 +12,14 @@ import org.openhab.binding.cbus.CBusBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import serverx.socket.cgate.CGateConnException;
+import serverx.socket.cgate.CGateTimeOutException;
+
 public class CBusNetworkHandler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(CBusGroupHandler.class);
-    private CBusCGateHandler cBusCGateHandler;
-    private int networkID;
+    private CBusCGateHandler bridgeHandler;
+    private String networkID;
 
     public CBusNetworkHandler(Bridge thing) {
         super(thing);
@@ -28,29 +32,19 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        cBusCGateHandler = getBridgeHandler();
-        Configuration configuration = getConfig();
-        networkID = Integer.parseInt(configuration.get(CBusBindingConstants.PROPERTY_NETWORK_ID).toString());
-        cBusCGateHandler.registerNetworkHandler(this);
+        getCBusCGateHandler();
+        networkID = getConfig().get(CBusBindingConstants.PROPERTY_NETWORK_ID).toString();
         updateStatus();
-
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
-        // updateStatus(ThingStatus.ONLINE);
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+        scheduler.scheduleAtFixedRate(networkSyncRunnable, (int) (60 * Math.random()),
+                Integer.parseInt(getConfig().get(CBusBindingConstants.PROPERTY_NETWORK_SYNC).toString()),
+                TimeUnit.SECONDS);
     }
 
     public void updateStatus() {
-        if (!cBusCGateHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+        if (!getCBusCGateHandler().getThing().getStatus().equals(ThingStatus.ONLINE)) {
             updateStatus(ThingStatus.OFFLINE);
         } else {
-            if (cBusCGateHandler.getCommandSocket().isNetworkOnline(networkID)) {
+            if (getCBusCGateHandler().isNetworkOnline(networkID)) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
@@ -58,25 +52,36 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
         }
     }
 
-    public synchronized CBusCGateHandler getBridgeHandler() {
-        CBusCGateHandler bridgeHandler = null;
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            logger.debug("Required bridge not defined for device {}.");
-            return null;
-        }
-        ThingHandler handler = bridge.getHandler();
-        if (handler instanceof CBusCGateHandler) {
-            bridgeHandler = (CBusCGateHandler) handler;
-        } else {
-            logger.debug("No available bridge handler found for bridge: {} .", bridge.getUID());
-            bridgeHandler = null;
+    public synchronized CBusCGateHandler getCBusCGateHandler() {
+        if (this.bridgeHandler == null) {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                logger.debug("Required bridge not defined for device {}.");
+                return null;
+            }
+            ThingHandler handler = bridge.getHandler();
+            if (handler instanceof CBusCGateHandler) {
+                this.bridgeHandler = (CBusCGateHandler) handler;
+            } else {
+                logger.debug("No available bridge handler found for bridge: {} .", bridge.getUID());
+                this.bridgeHandler = null;
+            }
         }
         return bridgeHandler;
     }
 
-    public int getNetworkID() {
+    public String getNetworkID() {
         return networkID;
     }
 
+    private Runnable networkSyncRunnable = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                logger.info("Starting network sync on network {}", networkID);
+                getCBusCGateHandler().getCommandSet().doNetworkSync(networkID);
+            } catch (CGateConnException | CGateTimeOutException e) {
+            }
+        }
+    };
 }

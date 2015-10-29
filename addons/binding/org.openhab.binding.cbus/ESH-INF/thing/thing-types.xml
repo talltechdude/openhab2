@@ -4,51 +4,12 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Sample Thing Type -->
-    <thing-type id="sample">
-        <label>CBus Binding Thing</label>
-        <description>Sample thing for CBus Binding</description>
-
-        <channels>
-            <channel id="channel1" typeId="sample-channel"/>
-        </channels>
-    </thing-type>
-
-    <!-- Sample Channel Type -->
-    <channel-type id="sample-channel">
-        <item-type>cbusItem</item-type>
-        <label>CBus Binding Channel</label>
-        <description>Sample channel for CBus Binding</description>
-    </channel-type>
-    
-    <thing-type id="group">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="network" />
-        </supported-bridge-type-refs>
-        <label>C-Bus Group</label>
-        <description>Clipsal C-Bus Group</description>
-
-        <channels>
-            <channel id="level" typeId="level-channel"/>
-        </channels>
-        <config-description>
-            <parameter name="group" type="integer" required="true">
-                <label>Group Number</label>
-                <description>C-Bus Group Number</description>
-            </parameter>
-            <parameter name="name" type="text" required="false">
-                <label>Group Name</label>
-                <description>C-Bus Group Name</description>
-            </parameter>
-        </config-description>
-    </thing-type>
-
     <thing-type id="light">
         <supported-bridge-type-refs>
             <bridge-type-ref id="network" />
         </supported-bridge-type-refs>
-        <label>C-Bus Lighting Group</label>
-        <description>Clipsal C-Bus Lighting Group</description>
+        <label>Lighting Group</label>
+        <description>Lighting Group</description>
 
         <channels>
             <channel id="state" typeId="light-channel"/>
@@ -56,29 +17,110 @@
         <config-description>
             <parameter name="group" type="integer" required="true">
                 <label>Group Number</label>
-                <description>C-Bus Group Number</description>
+                <description>Group Number</description>
             </parameter>
             <parameter name="name" type="text" required="false">
                 <label>Group Name</label>
-                <description>C-Bus Group Name</description>
+                <description>Group Name</description>
             </parameter>
         </config-description>
     </thing-type>
 
+    <thing-type id="temperature">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="network" />
+        </supported-bridge-type-refs>
+        <label>Temperature Group</label>
+        <description>Temperature Group</description>
+
+        <channels>
+            <channel id="temp" typeId="temp-channel"/>
+        </channels>
+        <config-description>
+            <parameter name="group" type="integer" required="true">
+                <label>Group Number</label>
+                <description>Group Number</description>
+            </parameter>
+            <parameter name="name" type="text" required="false">
+                <label>Group Name</label>
+                <description>Group Name</description>
+            </parameter>
+        </config-description>
+    </thing-type>
     
-    <!-- CBus Group Channel Type -->
-    <channel-type id="level-channel">
-        <item-type>Number</item-type>
-        <label>CBus Group Level Channel</label>
-        <description>Group channel for CBus group level</description>
-    </channel-type>
+    <thing-type id="trigger">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="network" />
+        </supported-bridge-type-refs>
+        <label>Trigger Group</label>
+        <description>Trigger Group</description>
+
+        <channels>
+            <channel id="value" typeId="trigger-channel"/>
+        </channels>
+        <config-description>
+            <parameter name="group" type="integer" required="true">
+                <label>Group Number</label>
+                <description>Group Number</description>
+            </parameter>
+            <parameter name="name" type="text" required="false">
+                <label>Group Name</label>
+                <description>Group Name</description>
+            </parameter>
+        </config-description>
+    </thing-type>
     
+    <thing-type id="dali">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="network" />
+        </supported-bridge-type-refs>
+        <label>DALI Group</label>
+        <description>DALI Group</description>
+
+        <channels>
+            <channel id="level" typeId="dali-channel"/>
+        </channels>
+        <config-description>
+            <parameter name="group" type="integer" required="true">
+                <label>Group Number</label>
+                <description>Group Number</description>
+            </parameter>
+            <parameter name="name" type="text" required="false">
+                <label>Group Name</label>
+                <description>Group Name</description>
+            </parameter>
+        </config-description>
+    </thing-type>
     
-    <!-- CBus Group Channel Type -->
+    <!-- Lighting Group Channel Type -->
     <channel-type id="light-channel">
         <item-type>Switch</item-type>
-        <label>CBus Light Channel</label>
+        <label>Light Channel</label>
         <description>Group channel for CBus on/off lighting groups</description>
+    </channel-type>
+        
+    <!-- Temperature Group Channel Type -->
+    <channel-type id="temp-channel">
+        <item-type>Number</item-type>
+        <label>Temperature</label>
+        <description>Group channel for CBus temperature groups</description>
+        <category>Temperature</category>
+        <state pattern="%0.2f °C" readOnly="true">
+        </state>
+    </channel-type>
+    
+    <!-- Trigger Group Channel Type -->
+    <channel-type id="trigger-channel">
+        <item-type>Number</item-type>
+        <label>Trigger Channel</label>
+        <description>Group channel for CBus trigger groups</description>
+    </channel-type>
+    
+    <!-- DALI Group Channel Type -->
+    <channel-type id="dali-channel">
+        <item-type>Dimmer</item-type>
+        <label>DALI Channel</label>
+        <description>Group channel for CBus DALI groups</description>
     </channel-type>
 
 </thing:thing-descriptions>

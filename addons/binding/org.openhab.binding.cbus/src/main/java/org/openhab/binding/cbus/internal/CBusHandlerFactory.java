@@ -17,9 +17,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.cbus.CBusBindingConstants;
 import org.openhab.binding.cbus.handler.CBusCGateHandler;
-import org.openhab.binding.cbus.handler.CBusGroupHandler;
+import org.openhab.binding.cbus.handler.CBusDaliHandler;
 import org.openhab.binding.cbus.handler.CBusLightHandler;
 import org.openhab.binding.cbus.handler.CBusNetworkHandler;
+import org.openhab.binding.cbus.handler.CBusTemperatureHandler;
+import org.openhab.binding.cbus.handler.CBusTriggerHandler;
 import org.openhab.binding.cbus.internal.discovery.CBusGroupDiscovery;
 import org.openhab.binding.cbus.internal.discovery.CBusNetworkDiscovery;
 
@@ -53,13 +55,22 @@ public class CBusHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         }
 
-        if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_GROUP)) {
-            return new CBusGroupHandler(thing);
-        }
-
         if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_LIGHT)) {
             return new CBusLightHandler(thing);
         }
+
+        if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_TEMPERATURE)) {
+            return new CBusTemperatureHandler(thing);
+        }
+
+        if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_TRIGGER)) {
+            return new CBusTriggerHandler(thing);
+        }
+
+        if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_DALI)) {
+            return new CBusDaliHandler(thing);
+        }
+
         return null;
     }
 
