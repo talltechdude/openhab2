@@ -11,13 +11,15 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.cbus.CBusBindingConstants;
+import org.openhab.binding.cbus.internal.cgate.CGateException;
+import org.openhab.binding.cbus.internal.cgate.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import serverx.socket.cgate.CGateCommandSet;
 
 /**
  * The {@link CBusGroupHandler} is responsible for handling commands, which are
@@ -27,10 +29,11 @@ import serverx.socket.cgate.CGateCommandSet;
  */
 public abstract class CBusGroupHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(CBusGroupHandler.class);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     protected CBusNetworkHandler cBusNetworkHandler = null;
-    protected CBusCGateHandler cBusCGateHandler = null;
-    protected CGateCommandSet commandSet = null;
+    // protected CBusCGateHandler cBusCGateHandler = null;
+    // protected CGateCommandSet commandSet = null;
+    protected Group group = null;
 
     public CBusGroupHandler(Thing thing) {
         super(thing);
@@ -41,19 +44,18 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
         updateStatus(ThingStatus.ONLINE);
         cBusNetworkHandler = getCBusNetworkHandler();
-        cBusCGateHandler = cBusNetworkHandler.getCBusCGateHandler();
-        commandSet = cBusCGateHandler.getCommandSet();
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+
+        try {
+            this.group = getGroup(Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()));
+        } catch (CGateException e) {
+            logger.error("Cannot create group {}", getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        }
     }
+
+    protected abstract Group getGroup(int groupID) throws CGateException;
 
     private synchronized CBusNetworkHandler getCBusNetworkHandler() {
         CBusNetworkHandler bridgeHandler = null;

@@ -10,6 +10,10 @@ package org.openhab.binding.cbus.handler;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.cbus.CBusBindingConstants;
+import org.openhab.binding.cbus.internal.cgate.Application;
+import org.openhab.binding.cbus.internal.cgate.CGateException;
+import org.openhab.binding.cbus.internal.cgate.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +37,9 @@ public class CBusTemperatureHandler extends CBusGroupHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    protected Group getGroup(int groupID) throws CGateException {
+        Application lighting = cBusNetworkHandler.getNetwork()
+                .getApplication(Integer.parseInt(CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE));
+        return lighting.getGroup(groupID);
     }
 }

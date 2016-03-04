@@ -13,6 +13,9 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
+import org.openhab.binding.cbus.internal.cgate.Application;
+import org.openhab.binding.cbus.internal.cgate.CGateException;
+import org.openhab.binding.cbus.internal.cgate.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,24 +37,28 @@ public class CBusTriggerHandler extends CBusGroupHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_VALUE)) {
             logger.info("Channel command {}: {}", channelUID.getAsString(), command.toString());
-            if (command instanceof OnOffType) {
-                if (command.equals(OnOffType.ON)) {
-                    cBusCGateHandler.trigger(cBusNetworkHandler.getNetworkID(),
-                            getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(), "255");
-                } else if (command.equals(OnOffType.OFF)) {
-                    cBusCGateHandler.trigger(cBusNetworkHandler.getNetworkID(),
-                            getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(), "0");
+            try {
+                if (command instanceof OnOffType) {
+                    if (command.equals(OnOffType.ON)) {
+
+                        group.ramp(255, 0);
+
+                    } else if (command.equals(OnOffType.OFF)) {
+                        group.ramp(0, 0);
+                    }
+                } else if (command instanceof DecimalType) {
+                    group.ramp((int) Math.round(Double.parseDouble(command.toString())), 0);
                 }
-            } else if (command instanceof DecimalType) {
-                cBusCGateHandler.trigger(cBusNetworkHandler.getNetworkID(),
-                        getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(), command.toString());
+            } catch (CGateException e) {
+                logger.error("Failed to send trigger command {} to {}", command.toString(), group.toString(), e);
             }
         }
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    protected Group getGroup(int groupID) throws CGateException {
+        Application application = cBusNetworkHandler.getNetwork()
+                .getApplication(Integer.parseInt(CBusBindingConstants.CBUS_APPLICATION_TRIGGER));
+        return application.getGroup(groupID);
     }
-
 }

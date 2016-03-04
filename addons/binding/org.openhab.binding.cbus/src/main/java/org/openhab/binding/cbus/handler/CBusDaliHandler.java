@@ -14,11 +14,11 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
+import org.openhab.binding.cbus.internal.cgate.Application;
+import org.openhab.binding.cbus.internal.cgate.CGateException;
+import org.openhab.binding.cbus.internal.cgate.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import serverx.socket.cgate.CGateConnException;
-import serverx.socket.cgate.CGateTimeOutException;
 
 /**
  * The {@link CBusDaliHandler} is responsible for handling commands, which are
@@ -41,37 +41,38 @@ public class CBusDaliHandler extends CBusGroupHandler {
             try {
                 if (command instanceof OnOffType) {
                     if (command.equals(OnOffType.ON)) {
-                        commandSet.turnOn(cBusNetworkHandler.getNetworkID(), CBusBindingConstants.CBUS_APPLICATION_DALI,
-                                getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
+                        group.on();
                     } else if (command.equals(OnOffType.OFF)) {
-                        commandSet.turnOff(cBusNetworkHandler.getNetworkID(),
-                                CBusBindingConstants.CBUS_APPLICATION_DALI,
-                                getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
+                        group.off();
                     }
                 } else if (command instanceof PercentType) {
                     PercentType value = (PercentType) command;
-                    logger.info("DALI: {} {} {} {} {}", cBusNetworkHandler.getNetworkID(),
-                            CBusBindingConstants.CBUS_APPLICATION_DALI,
-                            getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(),
-                            Integer.toString((int) Math.round(value.doubleValue())) + "%", "");
+                    // logger.info("DALI: {} {} {} {} {}", cBusNetworkHandler.getNetworkID(),
+                    // CBusBindingConstants.CBUS_APPLICATION_DALI,
+                    // getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(),
+                    // Integer.toString((int) Math.round(value.doubleValue())) + "%", "");
                     // commandSet.ramp(cBusNetworkHandler.getNetworkID(), CBusBindingConstants.CBUS_APPLICATION_DALI,
                     // getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(),
                     // Integer.toString((int) Math.round(value.doubleValue())) + "%", "");
-                    cBusCGateHandler.ramp(cBusNetworkHandler.getNetworkID(), CBusBindingConstants.CBUS_APPLICATION_DALI,
-                            getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(),
-                            Integer.toString((int) Math.round(value.doubleValue())) + "%", "");
+                    group.ramp((int) Math.round(value.doubleValue()), 0);
+                    // cBusCGateHandler.ramp(cBusNetworkHandler.getNetworkID(),
+                    // CBusBindingConstants.CBUS_APPLICATION_DALI,
+                    // getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(),
+                    // Integer.toString((int) Math.round(value.doubleValue())) + "%", "");
                 } else if (command instanceof IncreaseDecreaseType) {
                     logger.warn("Increase/Decrease not implemented for {}", channelUID.getAsString());
                 }
-            } catch (CGateConnException | CGateTimeOutException e) {
-                logger.error(e.getMessage());
+            } catch (CGateException e) {
+                logger.error("Cannot send command {} to {}", command.toString(), group.toString(), e);
             }
         }
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    protected Group getGroup(int groupID) throws CGateException {
+        Application lighting = cBusNetworkHandler.getNetwork()
+                .getApplication(Integer.parseInt(CBusBindingConstants.CBUS_APPLICATION_DALI));
+        return lighting.getGroup(groupID);
     }
 
 }

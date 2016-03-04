@@ -3,6 +3,7 @@ package org.openhab.binding.cbus.handler;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 
 import org.eclipse.smarthome.config.core.Configuration;
@@ -17,16 +18,13 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
+import org.openhab.binding.cbus.internal.cgate.CGateException;
+import org.openhab.binding.cbus.internal.cgate.CGateInterface;
+import org.openhab.binding.cbus.internal.cgate.CGateSession;
+import org.openhab.binding.cbus.internal.cgate.EventCallback;
+import org.openhab.binding.cbus.internal.cgate.StatusChangeCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import serverx.socket.cgate.CGateCommandSet;
-import serverx.socket.cgate.CGateCommandSock;
-import serverx.socket.cgate.CGateConnException;
-import serverx.socket.cgate.CGateEventsSock;
-import serverx.socket.cgate.CGateReconnect;
-import serverx.socket.cgate.CGateReconnectEvent;
-import serverx.socket.cgate.CGateTimeOutException;
 
 public class CBusCGateHandler extends BaseBridgeHandler {
 
@@ -34,20 +32,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
     private InetAddress ipAddress;
 
-    // private CGateConnection cgate;
-
-    // private CGateCommandSocket commandSocket;
-
-    private CGateCommandSock commandSock;
-    private CGateReconnect commandSockReconnect;
-
-    private CGateEventsSock statusSock;
-    private CGateReconnectEvent statusSockReconnect;
-
-    private CGateEventsSock eventsSock;
-    private CGateReconnectEvent eventsSockReconnect;
-
-    private boolean shutdownRequested = false;
+    private CGateSession cGateSession;
 
     public CBusCGateHandler(Bridge br) {
         super(br);
@@ -77,75 +62,21 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 return;
             }
         }
-        // if (config.get(CBusBindingConstants.PROPERTY_REFRESH_INTERVAL) != null) {
 
         logger.debug("CGate IP         {}.", this.ipAddress.getHostAddress());
 
-        shutdownRequested = false;
-        commandSock = new CGateCommandSock();
-        commandSock.setServerName(this.ipAddress.getHostAddress());
-        commandSock.setTimeOut(500);
-        commandSockReconnect = new CGateReconnect(commandSock);
-        commandSockReconnect.start();
-
-        eventsSock = new CGateEventsSock();
-        eventsSock.setServerName(this.ipAddress.getHostAddress());
-        eventsSock.setPortNo(20024);
-        eventsSockReconnect = new CGateReconnectEvent(eventsSock);
-        eventsSockReconnect.start();
-        eventsMonitor.start();
-
-        statusSock = new CGateEventsSock();
-        statusSock.setServerName(this.ipAddress.getHostAddress());
-        statusSock.setPortNo(20025);
-        statusSockReconnect = new CGateReconnectEvent(statusSock);
-        statusSockReconnect.start();
-        statusMonitor.start();
+        cGateSession = CGateInterface.connect(this.ipAddress, 20023, 20024, 20025);
 
         try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        updateStatus();
-        // cgate = new CGateConnection(configuration.ipAddress);
-        try {
-            // cgate.connect();
-
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            throw e;
-
-        }
-    }
-
-    public synchronized CGateCommandSet getCommandSet() {
-        try {
-            if (commandSock == null)
-                return null;
-            return new CGateCommandSet(commandSock);
-        } catch (CGateConnException e) {
-            logger.error(e.getMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public void dispose() {
-        // TODO Auto-generated method stub
-        shutdownRequested = true;
-        if (commandSockReconnect != null) {
-            commandSockReconnect.stop();
-        }
-        if (eventsSockReconnect != null) {
-            eventsSockReconnect.stop();
-        }
-        if (statusSockReconnect != null) {
-            statusSockReconnect.stop();
+            cGateSession.connect();
+            CGateInterface.noop(cGateSession);
+            cGateSession.registerEventCallback(new EventMonitor());
+            cGateSession.registerStatusChangeCallback(new StatusChangeMonitor());
+            updateStatus();
+        } catch (CGateException e) {
+            logger.error("Failed to connect to CGate", e);
         }
 
-        super.dispose();
     }
 
     @Override
@@ -154,123 +85,108 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     }
 
     public void updateStatus() {
-        if (commandSock.noop()) {
+        if (cGateSession.isConnected()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
-    private Thread eventsMonitor = new Thread() {
+    private class StatusChangeMonitor extends StatusChangeCallback {
+
         @Override
-        public void run() {
-            this.setName("Event socket monitor");
-            while (!shutdownRequested) {
-                try {
-                    String event = eventsSock.readEvents();
-                    if (event != null && !event.equals("-1")) {
-                        parseEvent(event);
-                        continue;
-                    }
-                    Thread.sleep(100L);
-                } catch (Exception e) {
-
-                }
-            }
+        public boolean isActive() {
+            return true;
         }
-    };
 
-    private Thread statusMonitor = new Thread() {
         @Override
-        public void run() {
-            this.setName("Status socket monitor");
-            while (!shutdownRequested) {
-                try {
-                    String status = statusSock.readEvents();
-                    if (status != null && !status.equals("-1")) {
-                        parseStatus(status);
-                        continue;
-                    }
-                    Thread.sleep(100L);
-                } catch (Exception e) {
-
-                }
+        public void processStatusChange(CGateSession cGateSession, String status) {
+            // TODO Auto-generated method stub
+            String contents[] = status.split("#");
+            LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(contents[0].split("\\s+")));
+            LinkedList<String> commentTokenizer = new LinkedList<String>(Arrays.asList(contents[1].split("\\s+")));
+            logger.debug("Status - " + contents[1] + " - " + "sessionID=" + cGateSession.getSessionID());
+            if (cGateSession.getSessionID() != null
+                    && contents[1].contains("sessionId=" + cGateSession.getSessionID())) {
+                logger.debug("Event generated by self, ignore post back {}", status);
+                // We created this event - don't worry about processing it again...
+                return;
             }
-        }
-    };
-
-    private void parseEvent(String event) {
-        logger.debug("Received event {}", event);
-        String contents[] = event.split("#");
-        LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(contents[0].split("\\s+")));
-        // 701
-        tokenizer.poll();
-        if (tokenizer.peek().equals("701")) {
-            tokenizer.poll();
-            String address = tokenizer.poll();
-            String oid = tokenizer.poll();
-            String value = tokenizer.poll();
-            if (value.startsWith("level=")) {
-                String level = value.replace("level=", "");
+            if (tokenizer.peek().equals("lighting")) {
+                tokenizer.poll();
+                String state = tokenizer.poll();
+                String address = tokenizer.poll();
+                if (state.equals("ramp"))
+                    state = tokenizer.poll();
+                updateGroup(address, state);
+            } else if (tokenizer.peek().equals("temperature")) {
+                tokenizer.poll();
+                tokenizer.poll();
+                String address = tokenizer.poll();
+                String temp = tokenizer.poll();
+                updateGroup(address, temp);
+            } else if (tokenizer.peek().equals("trigger")) {
+                tokenizer.poll();
+                tokenizer.poll();
+                String address = tokenizer.poll();
+                String level = tokenizer.poll();
                 updateGroup(address, level);
-            }
-        }
-    }
+            } else if (tokenizer.peek().equals("clock")) {
+                tokenizer.poll();
+                String address = "";
+                String value = "";
+                String type = tokenizer.poll();
+                if (type.equals("date")) {
+                    address = tokenizer.poll() + "/1";
+                    value = tokenizer.poll();
+                } else if (type.equals("time")) {
+                    address = tokenizer.poll() + "/0";
+                    value = tokenizer.poll();
+                } else if (type.equals("request_refresh")) {
 
-    private void parseStatus(String status) {
-        String contents[] = status.split("#");
-        LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(contents[0].split("\\s+")));
-        LinkedList<String> commentTokenizer = new LinkedList<String>(Arrays.asList(contents[1].split("\\s+")));
-
-        if (tokenizer.peek().equals("lighting")) {
-            tokenizer.poll();
-            String state = tokenizer.poll();
-            String address = tokenizer.poll();
-            if (state.equals("ramp"))
-                state = tokenizer.poll();
-            updateGroup(address, state);
-        } else if (tokenizer.peek().equals("temperature")) {
-            tokenizer.poll();
-            tokenizer.poll();
-            String address = tokenizer.poll();
-            String temp = tokenizer.poll();
-            updateGroup(address, temp);
-        } else if (tokenizer.peek().equals("trigger")) {
-            tokenizer.poll();
-            tokenizer.poll();
-            String address = tokenizer.poll();
-            String level = tokenizer.poll();
-            updateGroup(address, level);
-        } else if (tokenizer.peek().equals("clock")) {
-            tokenizer.poll();
-            String address = "";
-            String value = "";
-            String type = tokenizer.poll();
-            if (type.equals("date")) {
-                address = tokenizer.poll() + "/1";
-                value = tokenizer.poll();
-            } else if (type.equals("time")) {
-                address = tokenizer.poll() + "/0";
-                value = tokenizer.poll();
-            } else if (type.equals("request_refresh")) {
-
-            } else {
-                logger.error("Received unknown clock event: {}", status);
-            }
-            if (value != "") {
-                updateGroup(address, value);
-            }
-        } else if (commentTokenizer.peek().equals("lighting")) {
-            commentTokenizer.poll();
-            if (commentTokenizer.peek().equals("SyncUpdate")) {
+                } else {
+                    logger.error("Received unknown clock event: {}", status);
+                }
+                if (value != "") {
+                    updateGroup(address, value);
+                }
+            } else if (commentTokenizer.peek().equals("lighting")) {
                 commentTokenizer.poll();
-                String address = commentTokenizer.poll();
-                String level = commentTokenizer.poll().replace("level=", "");
-                updateGroup(address, level);
+                if (commentTokenizer.peek().equals("SyncUpdate")) {
+                    commentTokenizer.poll();
+                    String address = commentTokenizer.poll();
+                    String level = commentTokenizer.poll().replace("level=", "");
+                    updateGroup(address, level);
+                }
+            } else {
+                logger.info("Received unparsed event: '{}'", status);
             }
-        } else {
-            logger.info("Received unparsed event: '{}'", status);
         }
+
+    }
+
+    private class EventMonitor extends EventCallback {
+
+        @Override
+        public boolean acceptEvent(int event_code) {
+            return true;
+        }
+
+        @Override
+        public void processEvent(CGateSession cgate_session, int eventCode, GregorianCalendar event_time,
+                String event) {
+            LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(event.trim().split("\\s+")));
+            if (eventCode == 701) {
+                String address = tokenizer.poll();
+                String oid = tokenizer.poll();
+                String value = tokenizer.poll();
+                if (value.startsWith("level=")) {
+                    String level = value.replace("level=", "");
+                    updateGroup(address, level);
+                }
+            }
+        }
+
     }
 
     private void updateGroup(String address, String value) {
@@ -284,7 +200,9 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             // Is this networkThing from the network we are looking for...
             if (networkThing.getThingTypeUID().equals(CBusBindingConstants.BRIDGE_TYPE_NETWORK) && networkThing
                     .getConfiguration().get(CBusBindingConstants.PROPERTY_NETWORK_ID).toString().equals(network)) {
-
+                if (networkThing.getHandler() == null) {
+                    continue;
+                }
                 // Loop through all the things on this network and see if they match the application / group
                 for (Thing thing : ((CBusNetworkHandler) networkThing.getHandler()).getThing().getThings()) {
                     // Handle Lighting Application messages
@@ -375,21 +293,20 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             logger.trace("CBus value update for {}/{}/{}: {}", network, application, group, value);
     }
 
-    public void trigger(String network, String group, String value) {
-        commandSock.sendCommand("TRIGGER EVENT //EVCHURCH/" + network + "/"
-                + CBusBindingConstants.CBUS_APPLICATION_TRIGGER + "/" + group + " " + value);
+    public CGateSession getCGateSession() {
+        return cGateSession;
     }
 
-    public void ramp(String network, String application, String group, String value, String time) {
-        logger.info("RAMPING:{}", commandSock.sendCommand(
-                "RAMP //EVCHURCH/" + network + "/" + application + "/" + group + " " + value + " " + time));
-    }
-
-    public boolean isNetworkOnline(String network) {
-        try {
-            return "OK".equals(getCommandSet().isNetworkStateOK(network));
-        } catch (CGateConnException | CGateTimeOutException e) {
-            return false;
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (cGateSession != null && cGateSession.isConnected()) {
+            try {
+                cGateSession.close();
+            } catch (CGateException e) {
+                logger.error("Cannot close CGate session", e);
+            }
         }
     }
+
 }

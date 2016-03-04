@@ -54,6 +54,7 @@ public class CBusBindingConstants {
 
     public static final String PROPERTY_NETWORK_ID = "id";
     public static final String PROPERTY_NETWORK_NAME = "name";
+    public static final String PROPERTY_PROJECT = "project";
     public static final String PROPERTY_NETWORK_SYNC = "syncInterval";
 
     public static final String PROPERTY_REFRESH_INTERVAL = "refresh";
