@@ -1,0 +1,188 @@
+Switch    AU_Security                         "Security"                                     (CBus,Auditorium,Scene_Security)                                          { channel="cbus:light:evbms01:net200:AU_Security:state"}
+Switch    AU_Access                           "Access"                                       (CBus,Auditorium,Scene_Access)                                            { channel="cbus:light:evbms01:net200:AU_Access:state"}
+Switch    AU_Carpark_1                        "Carpark 1"                                    (CBus,Auditorium,Scene_Carpark)                                           { channel="cbus:light:evbms01:net200:AU_Carpark_1:state"}
+Switch    AU_Carpark_2                        "Carpark 2"                                    (CBus,Auditorium,Scene_Carpark)                                           { channel="cbus:light:evbms01:net200:AU_Carpark_2:state"}
+Switch    AU_Sign                             "Sign"                                         (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Sign:state"}
+Switch    AU_Rear_Flood                       "Rear Flood"                                   (CBus,Auditorium,Scene_Security)                                          { channel="cbus:light:evbms01:net200:AU_Rear_Flood:state"}
+Switch    AU_Bollard_1                        "Bollard 1"                                    (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Bollard_1:state"}
+Switch    AU_Bollard_2                        "Bollard 2"                                    (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Bollard_2:state"}
+Switch    AU_Oval_Flood_1                     "Oval Flood 1"                                 (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Oval_Flood_1:state"}
+Switch    AU_Oval_Flood_2                     "Oval Flood 2"                                 (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Oval_Flood_2:state"}
+
+Switch    AU_Toilet_Male                      "Toilet Male"                                  (CBus,Auditorium,PreHeat_Water,Fire_Alarm,AU_All_Off,Alarm_Sounding)      { channel="cbus:light:evbms01:net200:AU_Toilet_Male:state"}
+Switch    AU_Toilet_Female                    "Toilet Female"                                (CBus,Auditorium,PreHeat_Water,Fire_Alarm,AU_All_Off,Alarm_Sounding)      { channel="cbus:light:evbms01:net200:AU_Toilet_Female:state"}
+Switch    AU_Toilet_Disable                   "Toilet Disable"                               (CBus,Auditorium,PreHeat_Water,Fire_Alarm,AU_All_Off,Alarm_Sounding)      { channel="cbus:light:evbms01:net200:AU_Toilet_Disable:state"}
+Switch    AU_Toilet_Baby_Change               "Toilet Baby Change"                           (CBus,Auditorium,PreHeat_Water,Fire_Alarm,AU_All_Off,Alarm_Sounding)      { channel="cbus:light:evbms01:net200:AU_Toilet_Baby_Change:state"}
+Switch    AU_Toilet_Entry                     "Toilet Entry"                                 (CBus,Auditorium,AU_All_Off,Alarm_Sounding)                               { channel="cbus:light:evbms01:net200:AU_Toilet_Entry:state"}
+
+
+
+Switch    AU_Green_Room_Toilet                "Green Room Toilet"                            (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Green_Room_Toilet:state"}
+Switch    AU_Green_Room_Sink                  "Green Room Sink"                              (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Green_Room_Sink:state"}
+Switch    AU_Green_Room_Light                 "Green Room Light"                             (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Green_Room_Light:state"}
+
+
+Switch    AU_Server_Room                      "Server Room"                                  (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Server_Room:state"}
+Switch    AU_Production_Rear                  "Production Rear"                              (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Production_Rear:state"}
+Switch    AU_Production_Comms_1               "Production Comms 1"                           (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Production_Comms_1:state"}
+Switch    AU_Production_Comms_2               "Production Comms 2"                           (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Production_Comms_2:state"}
+
+
+
+
+
+Switch    AU_Internal_Walkway_Ramp            "Internal Walkway Ramp"                        (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Internal_Walkway_Ramp:state"}
+Switch    AU_Sound_Lock                       "Sound Lock"                                   (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Sound_Lock:state"}
+Switch    AU_Amp_Rack_Light                   "Amp Rack Light"                               (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Amp_Rack_Light:state"}
+Switch    AU_Stage_Lights                     "Stage Lights"                                 (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Stage_Lights:state"}
+Switch    AU_Dressing_Room_Light              "Dressing Room Light"                          (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Dressing_Room_Light:state"}
+Switch    AU_Lighting_Patch_bay_Lights        "Lighting Patch bay Lights"                    (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Lighting_Patch_bay_Lights:state"}
+Switch    AU_Dressing_Room_Toilet             "Dressing Room Toilet"                         (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Dressing_Room_Toilet:state"}
+Switch    AU_Dressing_Room_Store              "Dressing Room Store"                          (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Dressing_Room_Store:state"}
+Switch    AU_Cry_Room_Light                   "Cry Room Light"                               (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Cry_Room_Light:state"}
+Switch    AU_Cry_Room_Sink                    "Cry Room Sink"                                (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Cry_Room_Sink:state"}
+Switch    AU_Cry_Room_Toilet                  "Cry Room Toilet"                              (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Cry_Room_Toilet:state"}
+Switch    AU_Auditorium_Entry_North           "Auditorium Entry North"                       (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Auditorium_Entry_North:state"}
+Switch    AU_Auditorium_Entry_South           "Auditorium Entry South"                       (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Auditorium_Entry_South:state"}
+Switch    AU_Store_Room_Light                 "Store Room Light"                             (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Store_Room_Light:state"}
+Switch    AU_Isle_Lights                      "Isle Lights"                                  (CBus,Auditorium,Fire_Trip_Off)                                           { channel="cbus:light:evbms01:net200:AU_Isle_Lights:state"}
+Switch    AU_Foyer_AC_Room_Light              "Foyer AC Room Light"                          (CBus,Auditorium,Fire_Alarm,AU_All_Off,Alarm_Sounding)                    { channel="cbus:light:evbms01:net200:AU_Foyer_AC_Room_Light:state"}
+
+
+
+
+
+
+Switch    AU_Kitchen_Exhaust                  "Kitchen Exhaust"                              (CBus,Auditorium,AU_All_Off,Fire_Trip_Off)                                { channel="cbus:light:evbms01:net200:AU_Kitchen_Exhaust:state"}
+Switch    AU_Toilet_Exhaust                   "Toilet Exhaust"                               (CBus,Auditorium,AU_All_Off,Fire_Trip_Off)                                { channel="cbus:light:evbms01:net200:AU_Toilet_Exhaust:state"}
+Switch    AU_Kitchen_Power_Control            "Kitchen Power Control"                        (CBus,Auditorium,AU_All_Off)                                              { channel="cbus:light:evbms01:net200:AU_Kitchen_Power_Control:state"}
+Switch    AU_LX_Rack_1                        "LX Rack 1"                                    (CBus,Auditorium,AU_Stage_Lighting)                                       { channel="cbus:light:evbms01:net200:AU_LX_Rack_1:state"}
+Switch    AU_LX_Rack_2                        "LX Rack 2"                                    (CBus,Auditorium,AU_Stage_Lighting)                                       { channel="cbus:light:evbms01:net200:AU_LX_Rack_2:state"}
+Switch    AU_LX_Rack_3                        "LX Rack 3"                                    (CBus,Auditorium,AU_Stage_Lighting)                                       { channel="cbus:light:evbms01:net200:AU_LX_Rack_3:state"}
+Switch    AU_LX_Rack_4                        "LX Rack 4"                                    (CBus,Auditorium,AU_Stage_Lighting)                                       { channel="cbus:light:evbms01:net200:AU_LX_Rack_4:state"}
+Switch    AU_LX_Rack_5                        "LX Rack 5"                                    (CBus,Auditorium,AU_Stage_Lighting)                                       { channel="cbus:light:evbms01:net200:AU_LX_Rack_5:state"}
+Switch    AU_LX_GPO                           "LX GPO"                                       (CBus,Auditorium,AU_Stage_Lighting)                                       { channel="cbus:light:evbms01:net200:AU_LX_GPO:state"}
+
+Switch    AU_Amp_Rack_1_Rio_Processors        "Amp Rack 1 Rio Processors"                    (CBus,Auditorium,AU_Processors)                                           { channel="cbus:light:evbms01:net200:AU_Amp_Rack_1_Rio_Processors:state"}
+Switch    AU_Amp_Rack_1_Amps                  "Amp Rack 1 Amps"                              (CBus,Auditorium,AU_Amps)                                                 { channel="cbus:light:evbms01:net200:AU_Amp_Rack_1_Amps:state"}
+Switch    AU_Amp_Rack_2_Loop_Front_Fill       "Amp Rack 2 Loop Front Fill"                   (CBus,Auditorium,AU_Amps)                                                 { channel="cbus:light:evbms01:net200:AU_Amp_Rack_2_Loop_Front_Fill:state"}
+Switch    AU_Amp_Rack_2_Sub_Amp_R             "Amp Rack 2 Sub Amp R"                         (CBus,Auditorium,AU_Amps)                                                 { channel="cbus:light:evbms01:net200:AU_Amp_Rack_2_Sub_Amp_R:state"}
+Switch    AU_Sound_Desk_GPO                   "Sound Desk GPO"                               (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Sound_Desk_GPO:state"}
+Switch    AU_Sound_Desk_UPS                   "Sound Desk UPS"                               (CBus,Auditorium,AU_Processors)                                           { channel="cbus:light:evbms01:net200:AU_Sound_Desk_UPS:state"}
+Switch    AU_Foldback_Desk_GPO                "Foldback Desk GPO"                            (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Foldback_Desk_GPO:state"}
+Switch    AU_Foldback_Desk_UPS                "Foldback Desk UPS"                            (CBus,Auditorium,AU_Processors)                                           { channel="cbus:light:evbms01:net200:AU_Foldback_Desk_UPS:state"}
+Switch    AU_Server_Room_Rio_SDI              "Server Room Rio SDI"                          (CBus,Auditorium,AU_Processors)                                           { channel="cbus:light:evbms01:net200:AU_Server_Room_Rio_SDI:state"}
+Switch    AU_Server_Room_Amps                 "Server Room Amps"                             (CBus,Auditorium,AU_Amps)                                                 { channel="cbus:light:evbms01:net200:AU_Server_Room_Amps:state"}
+Switch    AU_Store_Room_Amps                  "Store Room Amps"                              (CBus,Auditorium,AU_Amps)                                                 { channel="cbus:light:evbms01:net200:AU_Store_Room_Amps:state"}
+Switch    AU_Stage_Power_Floor                "Stage Power Floor"                            (CBus,Auditorium,AU_Stage_Power)                                          { channel="cbus:light:evbms01:net200:AU_Stage_Power_Floor:state"}
+Switch    AU_Stage_Power_Walls                "Stage Power Walls"                            (CBus,Auditorium,AU_Stage_Power)                                          { channel="cbus:light:evbms01:net200:AU_Stage_Power_Walls:state"}
+Switch    AU_Production_Desk_GPO              "Production Desk GPO"                          (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Production_Desk_GPO:state"}
+Switch    AU_Foyer_Amp                        "Foyer Amp"                                    (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Foyer_Amp:state"}
+Switch    AU_Foyer_Amp_Control                "Foyer Amp Control"                            (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Foyer_Amp_Control:state"}
+
+Switch    AU_Hot_Water_Preheat                "Hot Water Preheat"                            (CBus,Auditorium,AU_All_Off)                                              { channel="cbus:light:evbms01:net200:AU_Hot_Water_Preheat:state"}
+
+
+Switch    AU_Green_Room_AC                    "Green Room AC"                                (CBus,Auditorium,AU_All_Off,Fire_Trip_Off)                                { channel="cbus:light:evbms01:net200:AU_Green_Room_AC:state"}
+Switch    AU_Production_Front_AC              "Production Front AC"                          (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Production_Front_AC:state"}
+Switch    AU_Production_Rear_AC               "Production Rear AC"                           (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Production_Rear_AC:state"}
+Switch    AU_Cry_Room_AC                      "Cry Room AC"                                  (CBus,Auditorium,AU_All_Off,Fire_Trip_Off)                                { channel="cbus:light:evbms01:net200:AU_Cry_Room_AC:state"}
+Switch    AU_Foyer_AC_Fan                     "Foyer AC Fan"                                 (CBus,Auditorium,AU_All_Off,Fire_Trip_Off)                                { channel="cbus:light:evbms01:net200:AU_Foyer_AC_Fan:state"}
+Switch    AU_Foyer_AC_Comp_1                  "Foyer AC Comp 1"                              (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Foyer_AC_Comp_1:state"}
+Switch    AU_Auditorium_AC1_Fan               "Auditorium AC1 Fan"                           (CBus,Auditorium,AU_All_Off,Fire_Trip_Off)                                { channel="cbus:light:evbms01:net200:AU_Auditorium_AC1_Fan:state"}
+Switch    AU_Auditorium_AC1_Stage_1           "Auditorium AC1 Stage 1"                       (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Auditorium_AC1_Stage_1:state"}
+Switch    AU_Auditorium_AC1_Stage_2           "Auditorium AC1 Stage 2"                       (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Auditorium_AC1_Stage_2:state"}
+Switch    AU_Auditorium_AC1_Powerful          "Auditorium AC1 Powerful"                      (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Auditorium_AC1_Powerful:state"}
+Switch    AU_Auditorium_AC2_Fan               "Auditorium AC2 Fan"                           (CBus,Auditorium,AU_All_Off,Fire_Trip_Off)                                { channel="cbus:light:evbms01:net200:AU_Auditorium_AC2_Fan:state"}
+Switch    AU_Auditorium_AC2_Stage_2           "Auditorium AC2 Stage 2"                       (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Auditorium_AC2_Stage_2:state"}
+Switch    AU_Auditorium_AC2_Powerful          "Auditorium AC2 Powerful"                      (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Auditorium_AC2_Powerful:state"}
+Switch    AU_Stage_AC_1_Fan                   "Stage AC 1 Fan"                               (CBus,Auditorium,AU_All_Off,Fire_Trip_Off)                                { channel="cbus:light:evbms01:net200:AU_Stage_AC_1_Fan:state"}
+Switch    AU_Stage_AC_1_Comp                  "Stage AC 1 Comp"                              (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Stage_AC_1_Comp:state"}
+Switch    AU_Auditorium_AC_Lower              "Auditorium AC Lower"                          (CBus,Auditorium,AU_All_Off,Fire_Trip_Off)                                { channel="cbus:light:evbms01:net200:AU_Auditorium_AC_Lower:state"}
+Switch    AU_Auditorium_AC_Upper              "Auditorium AC Upper"                          (CBus,Auditorium,AU_All_Off,Fire_Trip_Off)                                { channel="cbus:light:evbms01:net200:AU_Auditorium_AC_Upper:state"}
+Switch    AU_Foyer_AC                         "Foyer AC"                                     (CBus,Auditorium,AU_All_Off,Fire_Trip_Off)                                { channel="cbus:light:evbms01:net200:AU_Foyer_AC:state"}
+Switch    AU_Stage_AC                         "Stage_AC"                                     (CBus,Auditorium,AU_All_Off,Fire_Trip_Off)                                { channel="cbus:light:evbms01:net200:AU_Stage_AC:state"}
+
+Switch    AU_DALI_Network_1                   "DALI Network 1"                               (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_DALI_Network_1:state"}
+Switch    AU_DALI_Network_2                   "DALI Network 2"                               (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_DALI_Network_2:state"}
+Switch    AU_DALI_Network_3                   "DALI Network 3"                               (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_DALI_Network_3:state"}
+
+
+
+
+
+
+
+
+
+Switch    AU_ALARM_Armed                      "ALARM Armed"                                  (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ALARM_Armed:state"}
+Switch    AU_ALARM_Strobe                     "ALARM Strobe"                                 (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ALARM_Strobe:state"}
+Switch    AU_ALARM_PIR_Auditorium             "ALARM PIR Auditorium"                         (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ALARM_PIR_Auditorium:state"}
+Switch    AU_ALARM_PIR_Stage                  "ALARM PIR Stage"                              (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ALARM_PIR_Stage:state"}
+Switch    AU_ALARM_PIR_Foyer                  "ALARM PIR Foyer"                              (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ALARM_PIR_Foyer:state"}
+Switch    AU_AUX_Power_Fail                   "AUX Power Fail"                               (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_AUX_Power_Fail:state"}
+Switch    AU_AUX_Fire_Trip                    "AUX Fire Trip"                                (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_AUX_Fire_Trip:state"}
+
+Switch    AU_AUX_Auditorium_AC1_Fan           "AUX Auditorium AC1 Fan"                       (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_AUX_Auditorium_AC1_Fan:state"}
+Switch    AU_AUX_Auditorium_AC1_Comp_1        "AUX Auditorium AC1 Comp 1"                    (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_AUX_Auditorium_AC1_Comp_1:state"}
+Switch    AU_AUX_Auditorium_AC1_Comp_2        "AUX Auditorium AC1 Comp 2"                    (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_AUX_Auditorium_AC1_Comp_2:state"}
+Switch    AU_AUX_Auditorium_AC1_Heating       "AUX Auditorium AC1 Heating"                   (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_AUX_Auditorium_AC1_Heating:state"}
+Switch    AU_AUX_Auditorium_AC2_Fan           "AUX Auditorium AC2 Fan"                       (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_AUX_Auditorium_AC2_Fan:state"}
+Switch    AU_AUX_Auditorium_AC2_Comp_1        "AUX Auditorium AC2 Comp 1"                    (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_AUX_Auditorium_AC2_Comp_1:state"}
+Switch    AU_AUX_Auditorium_AC2_Comp_2        "AUX Auditorium AC2 Comp 2"                    (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_AUX_Auditorium_AC2_Comp_2:state"}
+Switch    AU_AUX_Auditorium_AC2_Heating       "AUX Auditorium AC2 Heating"                   (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_AUX_Auditorium_AC2_Heating:state"}
+Switch    AU_AUX_Stage_AC_Fan                 "AUX Stage AC Fan"                             (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_AUX_Stage_AC_Fan:state"}
+Switch    AU_AUX_Stage_AC_Comp_1              "AUX Stage AC Comp 1"                          (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_AUX_Stage_AC_Comp_1:state"}
+Switch    AU_AUX_Stage_AC_Heating             "AUX Stage AC Heating"                         (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_AUX_Stage_AC_Heating:state"}
+
+
+
+Switch    AU_PA_Band_Practice                 "PA Band Practice"                             (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_PA_Band_Practice:state"}
+Switch    AU_PA_Full_Service                  "PA Full Service"                              (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_PA_Full_Service:state"}
+Switch    AU_PA_Off                           "PA Off"                                       (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_PA_Off:state"}
+Switch    AU_Stage_Lighting                   "Stage Lighting"                               (CBus,Auditorium,AU_All_Off)                                              { channel="cbus:light:evbms01:net200:AU_Stage_Lighting:state"}
+Switch    AU_PA_Allow_Amps                    "PA Allow Amps"                                (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_PA_Allow_Amps:state"}
+
+
+
+
+
+
+
+
+
+
+Switch    AU_ENA_PIR_Toilet_Male              "PIR Toilet Male"                              (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Toilet_Male:state"}
+Switch    AU_ENA_PIR_Toilet_Female            "PIR Toilet Female"                            (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Toilet_Female:state"}
+Switch    AU_ENA_PIR_Toilet_Disable           "PIR Toilet Disable"                           (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Toilet_Disable:state"}
+Switch    AU_ENA_PIR_Toilet_Baby_Change       "PIR Toilet Baby Change"                       (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Toilet_Baby_Change:state"}
+Switch    AU_ENA_PIR_Toilet_Entry             "PIR Toilet Entry"                             (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Toilet_Entry:state"}
+Switch    AU_ENA_PIR_Production_Desk          "PIR Production Desk"                          (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Production_Desk:state"}
+Switch    AU_ENA_PIR_Production_Rear          "PIR Production Rear"                          (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Production_Rear:state"}
+Switch    AU_ENA_PIR_Server_Room              "PIR Server Room"                              (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Server_Room:state"}
+Switch    AU_ENA_PIR_Green_Room_Toilet        "PIR Green Room Toilet"                        (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Green_Room_Toilet:state"}
+Switch    AU_ENA_PIR_Green_Sink               "PIR Green Sink"                               (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Green_Sink:state"}
+Switch    AU_ENA_PIR_Green_Room               "PIR Green Room"                               (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Green_Room:state"}
+Switch    AU_ENA_PIR_Sound_Lock               "PIR Sound Lock"                               (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Sound_Lock:state"}
+Switch    AU_ENA_PIR_Amp_Rack                 "PIR Amp Rack"                                 (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Amp_Rack:state"}
+Switch    AU_ENA_PIR_Stage                    "PIR Stage"                                    (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Stage:state"}
+Switch    AU_ENA_PIR_Dressing_Room            "PIR Dressing Room"                            (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Dressing_Room:state"}
+Switch    AU_ENA_PIR_Dressing_Toilet          "PIR Dressing Toilet"                          (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Dressing_Toilet:state"}
+Switch    AU_ENA_PIR_Dressing_Store           "PIR Dressing Store"                           (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Dressing_Store:state"}
+Switch    AU_ENA_PIR_Cry_Room                 "PIR Cry Room"                                 (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Cry_Room:state"}
+Switch    AU_ENA_PIR_Cry_Room_Sink            "PIR Cry Room Sink"                            (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Cry_Room_Sink:state"}
+Switch    AU_ENA_PIR_Cry_Room_Toilet          "PIR Cry Room Toilet"                          (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Cry_Room_Toilet:state"}
+Switch    AU_ENA_PIR_Cry_Store                "PIR Cry Store"                                (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Cry_Store:state"}
+Switch    AU_ENA_PIR_Kitchen                  "PIR Kitchen"                                  (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Kitchen:state"}
+Switch    AU_ENA_PIR_Book_Shop                "PIR Book Shop"                                (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Book_Shop:state"}
+Switch    AU_ENA_PIR_Outdoor                  "PIR Outdoor"                                  (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_Outdoor:state"}
+Switch    AU_ENA_PIR_LUX_Sensor               "PIR LUX Sensor"                               (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_PIR_LUX_Sensor:state"}
+
+Switch    AU_ENA_LVL_Lightsensor              "LVL_Lightsensor"                              (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_ENA_LVL_Lightsensor:state"}
+
+Switch    AU_OVR_Main_Hall_AC_Compressors     "Main Hall AC Compressors"                     (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_OVR_Main_Hall_AC_Compressors:state"}
+Switch    AU_OVR_Outdoor                      "Outdoor"                                      (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_OVR_Outdoor:state"}
+Switch    AU_OVR_Low_Light                    "Low Light"                                    (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_OVR_Low_Light:state"}
+
+Switch    AU_Service_Active                   "Service Active"                               (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Service_Active:state"}
+Switch    AU_Auditorium_Entry_Door_Unlock     "Auditorium Entry Door Unlock"                 (CBus,Auditorium)                                                        { channel="cbus:light:evbms01:net200:AU_Auditorium_Entry_Door_Unlock:state"}

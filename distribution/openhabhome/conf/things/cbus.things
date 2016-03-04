@@ -1,0 +1,15 @@
+Bridge cbus:cgate:evbms01 [ ipAddress="localhost" ] {
+    Bridge network net50 [ id=50 ] {
+
+    }
+    Bridge network net100 [ id=100 ] {
+
+    }
+    Bridge network net101 [ id=101 ] {
+
+    }
+    Bridge network net200 [ id=200 ] {
+
+    }
+    
+}
