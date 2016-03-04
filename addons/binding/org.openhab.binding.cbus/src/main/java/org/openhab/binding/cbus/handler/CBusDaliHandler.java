@@ -47,18 +47,7 @@ public class CBusDaliHandler extends CBusGroupHandler {
                     }
                 } else if (command instanceof PercentType) {
                     PercentType value = (PercentType) command;
-                    // logger.info("DALI: {} {} {} {} {}", cBusNetworkHandler.getNetworkID(),
-                    // CBusBindingConstants.CBUS_APPLICATION_DALI,
-                    // getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(),
-                    // Integer.toString((int) Math.round(value.doubleValue())) + "%", "");
-                    // commandSet.ramp(cBusNetworkHandler.getNetworkID(), CBusBindingConstants.CBUS_APPLICATION_DALI,
-                    // getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(),
-                    // Integer.toString((int) Math.round(value.doubleValue())) + "%", "");
-                    group.ramp((int) Math.round(value.doubleValue()), 0);
-                    // cBusCGateHandler.ramp(cBusNetworkHandler.getNetworkID(),
-                    // CBusBindingConstants.CBUS_APPLICATION_DALI,
-                    // getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(),
-                    // Integer.toString((int) Math.round(value.doubleValue())) + "%", "");
+                    group.ramp((int) Math.round(value.doubleValue() / 100 * 255), 0);
                 } else if (command instanceof IncreaseDecreaseType) {
                     logger.warn("Increase/Decrease not implemented for {}", channelUID.getAsString());
                 }

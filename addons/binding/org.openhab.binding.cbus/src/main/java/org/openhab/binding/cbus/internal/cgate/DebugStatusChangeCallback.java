@@ -36,7 +36,7 @@ public class DebugStatusChangeCallback extends StatusChangeCallback {
 
     @Override
     public void processStatusChange(CGateSession cgate_session, String status_change) {
-        logger.debug("status_change: " + status_change);
+        // logger.debug("status_change: " + status_change);
     }
 
 }

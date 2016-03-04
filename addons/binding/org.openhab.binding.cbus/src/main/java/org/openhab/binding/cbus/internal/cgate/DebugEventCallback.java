@@ -38,7 +38,7 @@ public class DebugEventCallback extends EventCallback {
 
     @Override
     public void processEvent(CGateSession cgate_session, int event_code, GregorianCalendar event_time, String event) {
-        logger.debug("event_code: " + event_code + ", event_time: " + event_time.toString() + ", event: " + event);
+        // logger.debug("event_code: " + event_code + ", event_time: " + event_time.toString() + ", event: " + event);
     }
 
 }
