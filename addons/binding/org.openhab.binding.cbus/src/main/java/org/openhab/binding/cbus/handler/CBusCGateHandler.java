@@ -5,8 +5,10 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -16,8 +18,10 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
+import org.openhab.binding.cbus.internal.cgate.CGateConnectException;
 import org.openhab.binding.cbus.internal.cgate.CGateException;
 import org.openhab.binding.cbus.internal.cgate.CGateInterface;
 import org.openhab.binding.cbus.internal.cgate.CGateSession;
@@ -33,6 +37,10 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     private InetAddress ipAddress;
 
     private CGateSession cGateSession;
+
+    private Thread keepAlive;
+
+    private final ExecutorService threadPool = ThreadPoolManager.getPool("CBusCGateHandler-Helper");
 
     public CBusCGateHandler(Bridge br) {
         super(br);
@@ -65,31 +73,111 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
         logger.debug("CGate IP         {}.", this.ipAddress.getHostAddress());
 
-        cGateSession = CGateInterface.connect(this.ipAddress, 20023, 20024, 20025);
-
-        try {
-            cGateSession.connect();
-            CGateInterface.noop(cGateSession);
-            cGateSession.registerEventCallback(new EventMonitor());
-            cGateSession.registerStatusChangeCallback(new StatusChangeMonitor());
-            updateStatus();
-        } catch (CGateException e) {
-            logger.error("Failed to connect to CGate", e);
-        }
-
+        threadPool.execute(new KeepAlive());
+        // scheduler.scheduleAtFixedRate(new KeepAlive(), 0, 10, TimeUnit.SECONDS);
     }
 
-    @Override
-    public void updateStatus(ThingStatus status) {
-        super.updateStatus(status);
+    private class KeepAlive extends Thread {
+
+        @Override
+        public void run() {
+            while (!isInterrupted()) {
+                try {
+                    if (cGateSession == null || !cGateSession.isConnected()
+                            || !getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                        connect();
+                    } else {
+                        try {
+                            CGateInterface.noop(cGateSession);
+                        } catch (CGateException e) {
+                            logger.error("Cannot send NOOP keepalive {}", e);
+                            cGateSession.close();
+                            connect();
+                        }
+                    }
+                } catch (Exception e) {
+                }
+                try {
+                    sleep(10000l);
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+    }
+
+    private void connect() {
+        if (cGateSession == null) {
+            cGateSession = CGateInterface.connect(this.ipAddress, 20023, 20024, 20025);
+            cGateSession.registerEventCallback(new EventMonitor());
+            cGateSession.registerStatusChangeCallback(new StatusChangeMonitor());
+        }
+        if (cGateSession.isConnected()) {
+            logger.debug("CGate session reports online");
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            try {
+                cGateSession.connect();
+                updateStatus();
+                if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                    initializeChildThings();
+                }
+            } catch (CGateConnectException e) {
+                updateStatus();
+                if (e.getMessage().equals("Connection refused")) {
+                    logger.error("Failed to connect to CGate: {}", e.getMessage());
+                } else {
+                    logger.error("Failed to connect to CGate: {}", e);
+                }
+                try {
+                    cGateSession.close();
+                } catch (CGateException e2) {
+                }
+            }
+        }
     }
 
     public void updateStatus() {
+        ThingStatus lastStatus = getThing().getStatus();
         if (cGateSession.isConnected()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (!lastStatus.equals(ThingStatus.OFFLINE)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
         }
+        if (!getThing().getStatus().equals(lastStatus)) {
+            updateChildThings();
+        }
+    }
+
+    private void initializeChildThings() {
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                // now also re-initialize all network handlers
+                for (Thing thing : getThing().getThings()) {
+                    ThingHandler handler = thing.getHandler();
+                    if (handler != null) {
+                        handler.initialize();
+                    }
+                }
+            }
+        });
+    }
+
+    private void updateChildThings() {
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                // now also re-initialize all network handlers
+                for (Thing thing : getThing().getThings()) {
+                    ThingHandler handler = thing.getHandler();
+                    if (handler instanceof CBusNetworkHandler) {
+                        ((CBusNetworkHandler) handler).updateStatus();
+                    }
+                }
+            }
+        });
     }
 
     private class StatusChangeMonitor extends StatusChangeCallback {
@@ -116,8 +204,9 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 tokenizer.poll();
                 String state = tokenizer.poll();
                 String address = tokenizer.poll();
-                if (state.equals("ramp"))
+                if (state.equals("ramp")) {
                     state = tokenizer.poll();
+                }
                 updateGroup(address, state);
             } else if (tokenizer.peek().equals("temperature")) {
                 tokenizer.poll();
@@ -199,7 +288,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         for (Thing networkThing : getThing().getThings()) {
             // Is this networkThing from the network we are looking for...
             if (networkThing.getThingTypeUID().equals(CBusBindingConstants.BRIDGE_TYPE_NETWORK) && networkThing
-                    .getConfiguration().get(CBusBindingConstants.PROPERTY_NETWORK_ID).toString().equals(network)) {
+                    .getConfiguration().get(CBusBindingConstants.PROPERTY_ID).toString().equals(network)) {
                 if (networkThing.getHandler() == null) {
                     continue;
                 }
@@ -213,11 +302,11 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
                         ChannelUID channelUID = thing.getChannel(CBusBindingConstants.CHANNEL_STATE).getUID();
 
-                        if ("on".equalsIgnoreCase(value) || "255".equalsIgnoreCase(value))
+                        if ("on".equalsIgnoreCase(value) || "255".equalsIgnoreCase(value)) {
                             updateState(channelUID, OnOffType.ON);
-                        else if ("off".equalsIgnoreCase(value) || "0".equalsIgnoreCase(value))
+                        } else if ("off".equalsIgnoreCase(value) || "0".equalsIgnoreCase(value)) {
                             updateState(channelUID, OnOffType.OFF);
-                        else {
+                        } else {
                             try {
                                 int v = Integer.parseInt(value);
                                 updateState(channelUID, v > 0 ? OnOffType.ON : OnOffType.OFF);
@@ -286,11 +375,12 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 }
             }
         }
-        if (!handled)
+        if (!handled) {
             // logger.warn("Unhandled CBus value update for {}/{}/{}: {}", network, application, group, value);
             ;
-        else
+        } else {
             logger.trace("CBus value update for {}/{}/{}: {}", network, application, group, value);
+        }
     }
 
     public CGateSession getCGateSession() {
@@ -300,6 +390,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
+        keepAlive.interrupt();
         if (cGateSession != null && cGateSession.isConnected()) {
             try {
                 cGateSession.close();

@@ -73,14 +73,16 @@ public class CGateException extends Exception {
             InvocationTargetException ite = (InvocationTargetException) traced_exception;
             traced_exception = ite.getTargetException();
         }
-        if (traced_exception instanceof CGateException)
+        if (traced_exception instanceof CGateException) {
             return;
+        }
 
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         printStackTrace(pr);
         message += new_line + new_line + sw.toString();
 
-        logger.error(message);
+        // logger.error(message);
+        logger.error(response, e == null ? "" : e.getMessage());
     }
 }

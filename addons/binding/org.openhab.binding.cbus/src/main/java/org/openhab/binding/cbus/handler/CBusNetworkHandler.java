@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -36,7 +37,11 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         getCBusCGateHandler();
-        String networkID = getConfig().get(CBusBindingConstants.PROPERTY_NETWORK_ID).toString();
+        if (!bridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            updateStatus(ThingStatus.OFFLINE);
+            return;
+        }
+        String networkID = getConfig().get(CBusBindingConstants.PROPERTY_ID).toString();
         String project = getConfig().get(CBusBindingConstants.PROPERTY_PROJECT).toString();
         try {
             network = (Network) getCBusCGateHandler().getCGateSession()
@@ -46,26 +51,43 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR);
         }
         updateStatus();
+        // now also re-initialize all group handlers
+        for (Thing thing : getThing().getThings()) {
+            ThingHandler handler = thing.getHandler();
+            if (handler != null) {
+                handler.initialize();
+            }
+        }
         scheduler.scheduleAtFixedRate(networkSyncRunnable, (int) (60 * Math.random()),
                 Integer.parseInt(getConfig().get(CBusBindingConstants.PROPERTY_NETWORK_SYNC).toString()),
                 TimeUnit.SECONDS);
     }
 
     public void updateStatus() {
+        ThingStatus lastStatus = getThing().getStatus();
         try {
             if (!getCBusCGateHandler().getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "CGate connection offline");
             } else if (network == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             } else if (network.isOnline()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Network is not reporting online");
             }
         } catch (CGateException e) {
             logger.error("Problem checking network state for network {}",
                     network != null ? network.getNetworkID() : "<unknown>", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        }
+        if (!getThing().getStatus().equals(lastStatus)) {
+            for (Thing thing : getThing().getThings()) {
+                ThingHandler handler = thing.getHandler();
+                if (handler instanceof CBusGroupHandler) {
+                    ((CBusGroupHandler) handler).updateStatus();
+                }
+            }
         }
     }
 
@@ -98,7 +120,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                 logger.info("Starting network sync on network {}", network.getNetworkID());
                 getNetwork().startSync();
             } catch (CGateException e) {
-                logger.error("Cannot start network sync on {}", network.getNetworkID(), e);
+                logger.error("Cannot start network sync on network {} ", network.getNetworkID(), e);
             }
         }
     };

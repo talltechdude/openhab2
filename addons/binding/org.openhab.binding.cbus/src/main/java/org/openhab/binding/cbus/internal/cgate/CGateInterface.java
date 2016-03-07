@@ -20,6 +20,7 @@
 package org.openhab.binding.cbus.internal.cgate;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 
 /**
  *
@@ -73,6 +74,15 @@ public final class CGateInterface extends CGateObject {
      * @throws com.daveoxley.cbus.CGateException
      */
     public static void noop(CGateSession cgate_session) throws CGateException {
-        cgate_session.sendCommand("noop").handle200();
+        ArrayList<String> resp_array = cgate_session.sendCommand("noop").toArray();
+        if (resp_array.isEmpty()) {
+            throw new CGateException();
+        }
+
+        String resp_str = resp_array.get(resp_array.size() - 1);
+        String result_code = resp_str.substring(0, 3).trim();
+        if (!result_code.equals("200")) {
+            throw new CGateException(resp_str);
+        }
     }
 }

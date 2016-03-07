@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ExecutorService;
 
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,16 +43,20 @@ public class Response implements Iterable<String> {
 
     private BufferedReader response_reader;
 
-    private Thread response_thread;
-
     private ArrayList<String> array_response;
 
     private boolean response_generated = false;
 
+    protected static final ExecutorService thread_pool;
+
+    static {
+        thread_pool = ThreadPoolManager.getPool("CGateResponses");
+    }
+
     Response(BufferedReader response_reader) throws CGateException {
         try {
             this.response_reader = response_reader;
-            this.response_thread = new Thread() {
+            thread_pool.execute(new Thread() {
                 @Override
                 public void run() {
                     synchronized (iterator_mutex) {
@@ -59,7 +65,7 @@ public class Response implements Iterable<String> {
 
                     try {
                         boolean has_more = true;
-                        while (has_more) {
+                        while (has_more && !isInterrupted()) {
                             String response = Response.this.response_reader.readLine();
                             synchronized (Response.this.iterator_mutex) {
                                 array_response.add(response);
@@ -75,9 +81,9 @@ public class Response implements Iterable<String> {
                         }
                     } catch (IOException e) {
                         new CGateException(e);
+                        logger.error("Failed to load response ", e);
                     } finally {
                         Response.this.response_reader = null;
-                        Response.this.response_thread = null;
                         synchronized (Response.this.response_mutex) {
                             synchronized (Response.this.iterator_mutex) {
                                 Response.this.response_generated = true;
@@ -87,22 +93,41 @@ public class Response implements Iterable<String> {
                         }
                     }
                 }
-            };
-            this.response_thread.start();
+
+                @Override
+                public void interrupt() {
+                    super.interrupt();
+                    synchronized (Response.this.response_mutex) {
+                        synchronized (Response.this.iterator_mutex) {
+                            Response.this.response_generated = true;
+                            Response.this.response_mutex.notifyAll();
+                            Response.this.iterator_mutex.notifyAll();
+                        }
+                    }
+                }
+
+            }
+
+            );
+
         } catch (Exception e) {
             throw new CGateException(e);
         }
     }
 
     static boolean responseHasMore(String response) {
-        return response.substring(3, 4).equals("-");
+        return response == null ? false : response.substring(3, 4).equals("-");
+    }
+
+    private class x extends Thread {
+
     }
 
     ArrayList<String> toArray() {
         synchronized (response_mutex) {
             while (!response_generated) {
                 try {
-                    response_mutex.wait();
+                    response_mutex.wait(10000l);
                 } catch (InterruptedException ie) {
                 }
             }
@@ -121,16 +146,18 @@ public class Response implements Iterable<String> {
                 synchronized (iterator_mutex) {
                     while (array_response == null || (index >= array_response.size() && !response_generated)) {
                         try {
-                            iterator_mutex.wait();
+                            iterator_mutex.wait(10000l);
                         } catch (InterruptedException ie) {
                         }
                     }
 
-                    if (index < array_response.size())
+                    if (index < array_response.size()) {
                         return true;
+                    }
 
-                    if (response_generated)
+                    if (response_generated) {
                         return false;
+                    }
 
                     throw new IllegalStateException("Impossible");
                 }
@@ -139,8 +166,9 @@ public class Response implements Iterable<String> {
             @Override
             public String next() {
                 synchronized (iterator_mutex) {
-                    if (index >= array_response.size())
+                    if (index >= array_response.size()) {
                         throw new NoSuchElementException();
+                    }
 
                     return array_response.get(index++);
                 }
@@ -155,12 +183,14 @@ public class Response implements Iterable<String> {
 
     public void handle200() throws CGateException {
         ArrayList<String> resp_array = toArray();
-        if (resp_array.isEmpty())
+        if (resp_array.isEmpty()) {
             throw new CGateException();
+        }
 
         String resp_str = resp_array.get(resp_array.size() - 1);
         String result_code = resp_str.substring(0, 3).trim();
-        if (!result_code.equals("200"))
+        if (!result_code.equals("200")) {
             throw new CGateException(resp_str);
+        }
     }
 }

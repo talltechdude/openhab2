@@ -33,6 +33,11 @@ public class CBusLightHandler extends CBusGroupHandler {
     }
 
     @Override
+    public void initialize() {
+        super.initialize();
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_STATE)) {
             logger.info("Channel command {}: {}", channelUID.getAsString(), command.toString());

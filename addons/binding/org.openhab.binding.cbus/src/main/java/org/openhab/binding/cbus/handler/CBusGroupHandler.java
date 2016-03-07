@@ -44,13 +44,36 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
         cBusNetworkHandler = getCBusNetworkHandler();
-
+        if (!cBusNetworkHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            updateStatus(ThingStatus.OFFLINE);
+            return;
+        }
         try {
             this.group = getGroup(Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()));
+        } catch (Exception e) {
+            logger.error("Cannot create group {} ", getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(),
+                    e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+        updateStatus();
+    }
+
+    public void updateStatus() {
+        try {
+            if (cBusNetworkHandler == null || !cBusNetworkHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            } else if (group == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            } else if (group.getNetwork().isOnline()) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Network is not reporting online");
+            }
         } catch (CGateException e) {
-            logger.error("Cannot create group {}", getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(), e);
+            logger.error("Problem checking network state for network {}", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }

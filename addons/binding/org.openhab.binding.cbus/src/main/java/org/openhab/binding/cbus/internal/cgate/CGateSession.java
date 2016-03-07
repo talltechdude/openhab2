@@ -28,13 +28,16 @@ import java.io.PipedWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +50,8 @@ public class CGateSession extends CGateObject {
 
     private final Map<String, BufferedWriter> response_writers = Collections
             .synchronizedMap(new HashMap<String, BufferedWriter>());
+    private final Map<String, PipedWriter> piped_writers = Collections
+            .synchronizedMap(new HashMap<String, PipedWriter>());
 
     private final CommandConnection command_connection;
 
@@ -64,8 +69,9 @@ public class CGateSession extends CGateObject {
 
     CGateSession(InetAddress cgate_server, int command_port, int event_port, int status_change_port) {
         super(null);
-        if (cgate_server == null)
+        if (cgate_server == null) {
             throw new NullPointerException("cgate_server cannot be null");
+        }
 
         setupSubtreeCache("project");
         command_connection = new CommandConnection(cgate_server, command_port);
@@ -88,8 +94,9 @@ public class CGateSession extends CGateObject {
 
     @Override
     public CGateObject getCGateObject(String address) throws CGateException {
-        if (!address.startsWith("//"))
+        if (!address.startsWith("//")) {
             throw new IllegalArgumentException("Address must be a full address. i.e. Starting with //");
+        }
 
         boolean return_next = false;
         int next_part_index = address.indexOf("/", 2);
@@ -100,11 +107,13 @@ public class CGateSession extends CGateObject {
 
         String project_name = address.substring(2, next_part_index);
         Project project = Project.getProject(this, project_name);
-        if (project == null)
+        if (project == null) {
             throw new IllegalArgumentException("No project found: " + address);
+        }
 
-        if (return_next)
+        if (return_next) {
             return project;
+        }
 
         return project.getCGateObject(address.substring(next_part_index + 1));
     }
@@ -120,16 +129,18 @@ public class CGateSession extends CGateObject {
     }
 
     public void connect() throws CGateConnectException {
-        if (connected)
+        if (connected) {
             return;
+        }
 
         try {
             command_connection.start();
             event_connection.start();
             status_change_connection.start();
             connected = true;
-            if (pingKeepAlive)
+            if (pingKeepAlive) {
                 ping_connections.start();
+            }
         } catch (CGateConnectException e) {
             try {
                 close();
@@ -152,8 +163,9 @@ public class CGateSession extends CGateObject {
      * @throws com.daveoxley.cbus.CGateException
      */
     public void close() throws CGateException {
-        if (!connected)
+        if (!connected) {
             return;
+        }
 
         synchronized (ping_connections) {
             try {
@@ -162,9 +174,21 @@ public class CGateSession extends CGateObject {
             }
 
             try {
+                for (BufferedWriter writer : response_writers.values()) {
+                    writer.flush();
+                    writer.close();
+                }
+                response_writers.clear();
+                for (PipedWriter writer : piped_writers.values()) {
+                    writer.flush();
+                    writer.close();
+                }
+                piped_writers.clear();
+                Response.thread_pool.shutdownNow();
                 command_connection.stop();
                 event_connection.stop();
                 status_change_connection.stop();
+
             } catch (Exception e) {
                 throw new CGateException(e);
             } finally {
@@ -192,8 +216,9 @@ public class CGateSession extends CGateObject {
     }
 
     private void checkConnected() throws CGateNotConnectedException {
-        if (!connected)
+        if (!connected) {
             throw new CGateNotConnectedException();
+        }
         try {
             command_connection.start();
             event_connection.start();
@@ -205,6 +230,10 @@ public class CGateSession extends CGateObject {
 
     private void updateSessionID() {
         try {
+            if (!isConnected()) {
+                return;
+            }
+            sendCommand("session_id tag openHAB C-Bus Binding").handle200();
             ArrayList<String> resp_array = sendCommand("session_id").toArray();
             this.sessionID = responseToMap(resp_array.get(0)).get("sessionID");
             logger.debug("Updated session id: {}", sessionID);
@@ -242,16 +271,18 @@ public class CGateSession extends CGateObject {
         }
 
         protected synchronized void start() throws CGateConnectException {
-            if (thread != null)
+            if (thread != null) {
                 return;
+            }
 
             try {
                 socket = new Socket(server, port);
+                socket.setSoTimeout(5000);
                 input_reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                if (create_output)
+                if (create_output) {
                     output_stream = new PrintWriter(socket.getOutputStream(), true);
+                }
                 logConnected();
-                updateSessionID();
                 thread = new Thread(this);
                 thread.setDaemon(true);
                 thread.start();
@@ -267,8 +298,9 @@ public class CGateSession extends CGateObject {
                 // Only close the Socket as trying to close the BufferedReader results
                 // in a deadlock (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4859836).
                 try {
-                    if (socket != null)
+                    if (socket != null) {
                         socket.close();
+                    }
                 } catch (IOException e) {
                     new CGateException(e);
                 }
@@ -282,8 +314,9 @@ public class CGateSession extends CGateObject {
         }
 
         public void println(String str) throws CGateException {
-            if (!create_output || output_stream == null)
+            if (!create_output || output_stream == null) {
                 throw new CGateException();
+            }
 
             output_stream.println(str);
             output_stream.flush();
@@ -307,8 +340,9 @@ public class CGateSession extends CGateObject {
                     doRun();
                 }
             } catch (IOException ioe) {
-                if (thread != null)
+                if (thread != null) {
                     new CGateException(ioe);
+                }
             } catch (Exception e) {
                 new CGateException(e);
             } finally {
@@ -336,6 +370,7 @@ public class CGateSession extends CGateObject {
             thread = new Thread(this);
             thread.setDaemon(true);
             thread.start();
+            thread.setName("CGateConnectionPing");
         }
 
         @Override
@@ -348,9 +383,20 @@ public class CGateSession extends CGateObject {
                         } catch (InterruptedException e) {
                         }
 
-                        if (connected && pingKeepAlive)
+                        if (connected && pingKeepAlive) {
                             CGateInterface.noop(CGateSession.this);
+                        }
                     } catch (Exception e) {
+                        // Close connection
+                        /*
+                         * command_connection.stop();
+                         * event_connection.stop();
+                         * status_change_connection.stop();
+                         * clearCache();
+                         * connected = false;
+                         * logger.error("CGate connection lost");
+                         */
+                        logger.error("CGate connection error {}", e);
                     }
                 }
             } finally {
@@ -364,6 +410,7 @@ public class CGateSession extends CGateObject {
             PipedWriter piped_writer = new PipedWriter();
             BufferedWriter out = new BufferedWriter(piped_writer);
             response_writers.put(id, out);
+            piped_writers.put(id, piped_writer);
 
             PipedReader piped_reader = new PipedReader(piped_writer);
             return new BufferedReader(piped_reader);
@@ -399,10 +446,16 @@ public class CGateSession extends CGateObject {
 
         @Override
         public void doRun() throws IOException {
-            final String response = getInputReader().readLine();
-            if (response == null)
+            String response;
+            try {
+                response = getInputReader().readLine();
+            } catch (SocketTimeoutException e) {
+                logger.trace("IO Timeout");
+                return;
+            }
+            if (response == null) {
                 super.stop();
-            else {
+            } else {
                 int id_end = response.indexOf("]");
                 String id = response.substring(1, id_end);
                 String actual_response = response.substring(id_end + 2);
@@ -414,7 +467,9 @@ public class CGateSession extends CGateObject {
                 if (!Response.responseHasMore(actual_response)) {
                     writer.flush();
                     writer.close();
+                    piped_writers.get(id).close();
                     response_writers.remove(id);
+                    piped_writers.remove(id);
                 }
             }
         }
@@ -430,6 +485,8 @@ public class CGateSession extends CGateObject {
 
     private class EventConnection extends CGateConnection {
 
+        private final ExecutorService thread_pool = ThreadPoolManager.getPool("CGateEventCallback");
+
         private final List<EventCallback> event_callbacks = Collections
                 .synchronizedList(new ArrayList<EventCallback>());
 
@@ -443,18 +500,26 @@ public class CGateSession extends CGateObject {
 
         @Override
         protected void doRun() throws IOException {
-            final String event = getInputReader().readLine();
-            if (event == null)
+            String response;
+            try {
+                response = getInputReader().readLine();
+            } catch (SocketTimeoutException e) {
+                logger.trace("IO Timeout");
+                return;
+            }
+            final String event = response;
+            if (event == null) {
                 super.stop();
-            else if (event.length() >= 19) {
+            } else if (event.length() >= 19) {
                 final int event_code = Integer.parseInt(event.substring(16, 19).trim());
                 for (final EventCallback event_callback : event_callbacks) {
-                    if (!continueRunning())
+                    if (!continueRunning()) {
                         return;
+                    }
 
                     try {
                         if (event_callback.acceptEvent(event_code)) {
-                            Thread callback_thread = new Thread() {
+                            thread_pool.execute(new Runnable() {
                                 @Override
                                 public void run() {
                                     GregorianCalendar event_time = new GregorianCalendar(
@@ -468,8 +533,7 @@ public class CGateSession extends CGateObject {
                                     event_callback.processEvent(CGateSession.this, event_code, event_time,
                                             event.length() == 19 ? null : event.substring(19));
                                 }
-                            };
-                            callback_thread.start();
+                            });
                         }
                     } catch (Exception e) {
                         new CGateException(e);
@@ -488,6 +552,9 @@ public class CGateSession extends CGateObject {
     }
 
     private class StatusChangeConnection extends CGateConnection {
+
+        private final ExecutorService thread_pool = ThreadPoolManager.getPool("CGateStatusCallback");
+
         private final List<StatusChangeCallback> sc_callbacks = Collections
                 .synchronizedList(new ArrayList<StatusChangeCallback>());
 
@@ -501,23 +568,30 @@ public class CGateSession extends CGateObject {
 
         @Override
         protected void doRun() throws IOException {
-            final String status_change = getInputReader().readLine();
-            if (status_change == null)
+            String response;
+            try {
+                response = getInputReader().readLine();
+            } catch (SocketTimeoutException e) {
+                logger.trace("IO Timeout");
+                return;
+            }
+            final String status_change = response;
+            if (status_change == null) {
                 super.stop();
-            else if (status_change.length() > 0) {
+            } else if (status_change.length() > 0) {
                 for (final StatusChangeCallback sc_callback : sc_callbacks) {
-                    if (!continueRunning())
+                    if (!continueRunning()) {
                         return;
+                    }
 
                     if (sc_callback.isActive()) {
                         try {
-                            Thread callback_thread = new Thread() {
+                            thread_pool.execute(new Runnable() {
                                 @Override
                                 public void run() {
                                     sc_callback.processStatusChange(CGateSession.this, status_change);
                                 }
-                            };
-                            callback_thread.start();
+                            });
                         } catch (Exception e) {
                             new CGateException(e);
                         }

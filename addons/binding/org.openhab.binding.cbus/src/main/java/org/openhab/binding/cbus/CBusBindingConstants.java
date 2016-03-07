@@ -52,8 +52,8 @@ public class CBusBindingConstants {
             THING_TYPE_DALI);
     public final static Set<ThingTypeUID> NETWORK_DISCOVERY_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_TYPE_NETWORK);
 
-    public static final String PROPERTY_NETWORK_ID = "id";
-    public static final String PROPERTY_NETWORK_NAME = "name";
+    public static final String PROPERTY_ID = "id";
+    public static final String PROPERTY_NAME = "name";
     public static final String PROPERTY_PROJECT = "project";
     public static final String PROPERTY_NETWORK_SYNC = "syncInterval";
 

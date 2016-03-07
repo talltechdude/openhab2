@@ -46,8 +46,9 @@ public final class Network extends CGateObject implements Comparable<Network> {
 
     @Override
     public CGateObject getCGateObject(String address) throws CGateException {
-        if (address.startsWith("//"))
+        if (address.startsWith("//")) {
             throw new IllegalArgumentException("Address must be a relative address. i.e. Not starting with //");
+        }
 
         boolean return_next = false;
         int next_part_index = address.indexOf("/");
@@ -58,8 +59,9 @@ public final class Network extends CGateObject implements Comparable<Network> {
 
         String next_part = address.substring(0, next_part_index);
         if (next_part.equals("p")) {
-            if (return_next)
+            if (return_next) {
                 throw new IllegalArgumentException("The address must not end with p");
+            }
 
             int unit_part_index = address.substring(next_part_index + 1).indexOf("/");
             if (unit_part_index == -1) {
@@ -70,21 +72,25 @@ public final class Network extends CGateObject implements Comparable<Network> {
             next_part = address.substring(next_part_index + 1, unit_part_index);
             int unit_id = Integer.parseInt(next_part);
             Unit unit = getUnit(unit_id);
-            if (unit == null)
+            if (unit == null) {
                 throw new IllegalArgumentException("No unit found: " + address);
+            }
 
-            if (return_next)
+            if (return_next) {
                 return unit;
+            }
 
             return unit.getCGateObject(address.substring(next_part_index + 1));
         } else {
             int application_id = Integer.parseInt(next_part);
             Application application = getApplication(application_id);
-            if (application == null)
+            if (application == null) {
                 throw new IllegalArgumentException("No application found: " + address);
+            }
 
-            if (return_next)
+            if (return_next) {
                 return application;
+            }
 
             return application.getCGateObject(address.substring(next_part_index + 1));
         }
@@ -103,8 +109,9 @@ public final class Network extends CGateObject implements Comparable<Network> {
     @Override
     public int compareTo(Network o) {
         int cmp = project.compareTo(o.project);
-        if (cmp != 0)
+        if (cmp != 0) {
             return cmp;
+        }
         return (getNetworkID() < o.getNetworkID() ? -1 : (getNetworkID() == o.getNetworkID() ? 0 : 1));
     }
 
@@ -122,13 +129,15 @@ public final class Network extends CGateObject implements Comparable<Network> {
         Response resp = cgate_session.sendCommand("net list_all");
 
         if (!cached_objects) {
-            for (Project project : Project.dir(cgate_session, true))
+            for (Project project : Project.dir(cgate_session, true)) {
                 project.clearCache("network");
+            }
         }
 
         ArrayList<Network> networks = new ArrayList<Network>();
-        for (String response : resp)
+        for (String response : resp) {
             networks.add(getOrCreateNetwork(cgate_session, response));
+        }
 
         return networks;
     }
@@ -142,8 +151,9 @@ public final class Network extends CGateObject implements Comparable<Network> {
      */
     public Application getApplication(int application_id) throws CGateException {
         Application application = (Application) getCachedObject("application", String.valueOf(application_id));
-        if (application != null)
+        if (application != null) {
             return application;
+        }
 
         getApplications(false);
 
@@ -159,8 +169,9 @@ public final class Network extends CGateObject implements Comparable<Network> {
      */
     public Unit getUnit(int unit_id) throws CGateException {
         Unit unit = (Unit) getCachedObject("unit", String.valueOf(unit_id));
-        if (unit != null)
+        if (unit != null) {
             return unit;
+        }
 
         getUnits(false);
 
@@ -187,9 +198,9 @@ public final class Network extends CGateObject implements Comparable<Network> {
         HashMap<String, String> resp_map = responseToMap(cgate_response);
         int net_id = -1;
         String value = resp_map.get("network");
-        if (value != null)
+        if (value != null) {
             net_id = Integer.parseInt(value.trim());
-        else {
+        } else {
             value = resp_map.get("address");
             if (value != null) {
                 String net_str = value.substring(project.getName().length() + 3);
@@ -197,8 +208,9 @@ public final class Network extends CGateObject implements Comparable<Network> {
             }
         }
 
-        if (net_id < 0)
+        if (net_id < 0) {
             throw new CGateException();
+        }
 
         return net_id;
     }
@@ -253,8 +265,9 @@ public final class Network extends CGateObject implements Comparable<Network> {
     }
 
     public ArrayList<Unit> getUnits(boolean cached_objects) throws CGateException {
-        if (!cached_objects)
+        if (!cached_objects) {
             clearCache("unit");
+        }
 
         Response resp = dbget(null);
 
@@ -273,8 +286,9 @@ public final class Network extends CGateObject implements Comparable<Network> {
         for (int i = 1; i <= number_of_units; i++) {
             ArrayList<String> resp_array = dbget("Unit[" + i + "]/Address").toArray();
             Unit unit = Unit.getOrCreateUnit(getCGateSession(), this, i, resp_array.get(0));
-            if (unit != null)
+            if (unit != null) {
                 units.add(unit);
+            }
         }
 
         tree();
@@ -296,10 +310,11 @@ public final class Network extends CGateObject implements Comparable<Network> {
 
         for (String response : resp) {
             if (response.indexOf("" + getAddress() + "/") > -1) {
-                if (getApplicationType(this, response).equals("p"))
+                if (getApplicationType(this, response).equals("p")) {
                     Unit.createDBUnit(cgate_session, this, response);
-                else
+                } else {
                     Group.createDBGroup(cgate_session, this, response);
+                }
             }
         }
     }
@@ -331,8 +346,9 @@ public final class Network extends CGateObject implements Comparable<Network> {
         CGateSession cgate_session = getCGateSession();
         Response resp = dbget(null);
 
-        if (!cached_objects)
+        if (!cached_objects) {
             clearCache("application");
+        }
 
         int number_of_applications = -1;
         for (String response : resp) {
@@ -349,8 +365,9 @@ public final class Network extends CGateObject implements Comparable<Network> {
         for (int i = 1; i <= number_of_applications; i++) {
             ArrayList<String> resp_array = dbget("Application[" + i + "]/Address").toArray();
             Application application = Application.getOrCreateApplication(cgate_session, this, i, resp_array.get(0));
-            if (application != null)
+            if (application != null) {
                 applications.add(application);
+            }
         }
 
         return applications;
@@ -361,6 +378,6 @@ public final class Network extends CGateObject implements Comparable<Network> {
     }
 
     public boolean isOnline() throws CGateException {
-        return "OK".equals(getState());
+        return "ok".equals(getState());
     }
 }
