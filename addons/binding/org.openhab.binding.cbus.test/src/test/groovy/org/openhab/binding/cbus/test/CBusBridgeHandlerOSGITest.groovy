@@ -74,7 +74,7 @@ class CBusBridgeHandlerOSGITest extends OSGiTest {
         assertThat cBusNetworkHandler, is(nullValue())
 
         Configuration configuration2 = new Configuration().with {
-            put(CBusBindingConstants.PROPERTY_NETWORK_ID, "50")
+            put(CBusBindingConstants.PROPERTY_ID, "50")
             put(CBusBindingConstants.PROPERTY_PROJECT, "EVCHURCH")
             it
         }
