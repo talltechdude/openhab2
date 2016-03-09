@@ -257,7 +257,16 @@ public class NetworkThermostatHandler extends BaseThingHandler {
         } else if (channelUID.getId().equals(CHANNEL_OVERRIDE) && command.equals(OnOffType.OFF)) {
             logger.info("Cancel override: {}", sendCommand("WOR1D0:00"));
             updateThermostatStatus();
+
+        } else if (channelUID.getId().equals(CHANNEL_OVERRIDE_TIMER)) {
+            double timer = Double.parseDouble(command.toString());
+            int hours = (int) Math.floor(timer / 60);
+            int mins = (int) (timer % 60);
+            logger.info("Cancel override: {}",
+                    sendCommand("WOR1D" + Integer.toString(hours) + ":" + String.format("%02d", mins)));
+            updateThermostatStatus();
         }
+
     }
 
     @Override
@@ -315,6 +324,7 @@ public class NetworkThermostatHandler extends BaseThingHandler {
         if (out == null) {
             return false;
         }
+        logger.debug("Sending command to thermostat {}: {}", getThing().getUID(), command);
         out.println(command);
         return true;
     }

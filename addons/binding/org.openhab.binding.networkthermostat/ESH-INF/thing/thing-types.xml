@@ -81,8 +81,7 @@
         <label>Current Temperature</label>
         <description>Current measured room temperature</description>
         <category>Temperature</category>
-        <state pattern="%d °C" readOnly="true">
-        </state>
+        <state readOnly="true" pattern="%d °C" />
     </channel-type>
     
     <channel-type id="compressor_mode">
@@ -124,6 +123,7 @@
         <description>Override active</description>
         <state readOnly="false" />
     </channel-type>
+    
     <channel-type id="led">
         <item-type>Switch</item-type>
         <label>LED Indicator</label>
