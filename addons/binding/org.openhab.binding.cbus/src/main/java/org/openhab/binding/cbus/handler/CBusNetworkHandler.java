@@ -117,10 +117,12 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
         @Override
         public void run() {
             try {
-                logger.info("Starting network sync on network {}", network.getNetworkID());
-                getNetwork().startSync();
+                if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                    logger.info("Starting network sync on network {}", network.getNetworkID());
+                    getNetwork().startSync();
+                }
             } catch (CGateException e) {
-                logger.error("Cannot start network sync on network {} ", network.getNetworkID(), e);
+                logger.error("Cannot start network sync on network {} ", network.getNetworkID());
             }
         }
     };

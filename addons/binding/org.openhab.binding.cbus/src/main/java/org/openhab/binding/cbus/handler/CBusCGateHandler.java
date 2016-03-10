@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 import org.eclipse.smarthome.config.core.Configuration;
@@ -87,11 +88,8 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                             || !getThing().getStatus().equals(ThingStatus.ONLINE)) {
                         connect();
                     } else {
-                        try {
-                            CGateInterface.noop(cGateSession);
-                        } catch (CGateException e) {
-                            logger.error("Cannot send NOOP keepalive {}", e);
-                            cGateSession.close();
+                        if (!CGateInterface.noop(cGateSession)) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                             connect();
                         }
                     }
@@ -101,6 +99,23 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                     sleep(10000l);
                 } catch (InterruptedException e) {
                 }
+            }
+        }
+    }
+
+    private class NoopCheck implements Runnable {
+        private final CountDownLatch doneSignal;
+
+        protected NoopCheck(CountDownLatch doneSignal) {
+            this.doneSignal = doneSignal;
+        }
+
+        @Override
+        public void run() {
+            try {
+                CGateInterface.noop(cGateSession);
+                doneSignal.countDown();
+            } catch (Exception e) {
             }
         }
     }
@@ -265,6 +280,8 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         public void processEvent(CGateSession cgate_session, int eventCode, GregorianCalendar event_time,
                 String event) {
             LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(event.trim().split("\\s+")));
+            // List<String> tokenizer = Collections.synchronizedList(new LinkedList<String>());//
+            // Arrays.asList(event.trim().split("\\s+"))));
             if (eventCode == 701) {
                 String address = tokenizer.poll();
                 String oid = tokenizer.poll();
@@ -301,15 +318,19 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                                     .equals(group)) {
 
                         ChannelUID channelUID = thing.getChannel(CBusBindingConstants.CHANNEL_STATE).getUID();
+                        ChannelUID channelLevelUID = thing.getChannel(CBusBindingConstants.CHANNEL_LEVEL).getUID();
 
                         if ("on".equalsIgnoreCase(value) || "255".equalsIgnoreCase(value)) {
                             updateState(channelUID, OnOffType.ON);
+                            updateState(channelLevelUID, new PercentType(100));
                         } else if ("off".equalsIgnoreCase(value) || "0".equalsIgnoreCase(value)) {
                             updateState(channelUID, OnOffType.OFF);
+                            updateState(channelLevelUID, new PercentType(0));
                         } else {
                             try {
                                 int v = Integer.parseInt(value);
                                 updateState(channelUID, v > 0 ? OnOffType.ON : OnOffType.OFF);
+                                updateState(channelLevelUID, new PercentType((int) (v * 100 / 255.0)));
                             } catch (NumberFormatException e) {
                                 logger.error("Invalid value presented to channel {}. Received {}, expected On/Off",
                                         channelUID, value);

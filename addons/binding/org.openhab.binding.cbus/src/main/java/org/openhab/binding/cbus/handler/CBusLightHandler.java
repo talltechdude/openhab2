@@ -7,7 +7,9 @@
  */
 package org.openhab.binding.cbus.handler;
 
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -51,6 +53,24 @@ public class CBusLightHandler extends CBusGroupHandler {
                 } catch (CGateException e) {
                     logger.error("Failed to send command {} to {}", command.toString(), group.toString(), e);
                 }
+            }
+        } else if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_LEVEL)) {
+            logger.info("Channel command {}: {}", channelUID.getAsString(), command.toString());
+            try {
+                if (command instanceof OnOffType) {
+                    if (command.equals(OnOffType.ON)) {
+                        group.on();
+                    } else if (command.equals(OnOffType.OFF)) {
+                        group.off();
+                    }
+                } else if (command instanceof PercentType) {
+                    PercentType value = (PercentType) command;
+                    group.ramp((int) Math.round(value.doubleValue() / 100 * 255), 0);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    logger.warn("Increase/Decrease not implemented for {}", channelUID.getAsString());
+                }
+            } catch (CGateException e) {
+                logger.error("Failed to send command {} to {}", command.toString(), group.toString(), e);
             }
         }
     }

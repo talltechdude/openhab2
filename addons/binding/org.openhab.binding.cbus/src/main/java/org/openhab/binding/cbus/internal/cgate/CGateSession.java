@@ -35,7 +35,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
@@ -77,8 +77,8 @@ public class CGateSession extends CGateObject {
         command_connection = new CommandConnection(cgate_server, command_port);
         event_connection = new EventConnection(cgate_server, event_port);
         status_change_connection = new StatusChangeConnection(cgate_server, status_change_port);
-        registerEventCallback(new DebugEventCallback());
-        registerStatusChangeCallback(new DebugStatusChangeCallback());
+        // registerEventCallback(new DebugEventCallback());
+        // registerStatusChangeCallback(new DebugStatusChangeCallback());
         ping_connections = new PingConnections();
     }
 
@@ -134,6 +134,7 @@ public class CGateSession extends CGateObject {
         }
 
         try {
+            sessionID = null;
             command_connection.start();
             event_connection.start();
             status_change_connection.start();
@@ -169,7 +170,7 @@ public class CGateSession extends CGateObject {
 
         synchronized (ping_connections) {
             try {
-                sendCommand("quit").toArray();
+                sendCommand("quit");
             } catch (Exception e) {
             }
 
@@ -188,7 +189,7 @@ public class CGateSession extends CGateObject {
                 command_connection.stop();
                 event_connection.stop();
                 status_change_connection.stop();
-
+                sessionID = null;
             } catch (Exception e) {
                 throw new CGateException(e);
             } finally {
@@ -485,7 +486,8 @@ public class CGateSession extends CGateObject {
 
     private class EventConnection extends CGateConnection {
 
-        private final ExecutorService thread_pool = ThreadPoolManager.getPool("CGateEventCallback");
+        private final ThreadPoolExecutor thread_pool = (ThreadPoolExecutor) ThreadPoolManager
+                .getPool("CGateEventCallback");
 
         private final List<EventCallback> event_callbacks = Collections
                 .synchronizedList(new ArrayList<EventCallback>());
@@ -553,7 +555,8 @@ public class CGateSession extends CGateObject {
 
     private class StatusChangeConnection extends CGateConnection {
 
-        private final ExecutorService thread_pool = ThreadPoolManager.getPool("CGateStatusCallback");
+        private final ThreadPoolExecutor thread_pool = (ThreadPoolExecutor) ThreadPoolManager
+                .getPool("CGateStatusCallback");
 
         private final List<StatusChangeCallback> sc_callbacks = Collections
                 .synchronizedList(new ArrayList<StatusChangeCallback>());
