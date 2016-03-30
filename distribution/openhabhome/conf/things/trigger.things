@@ -1,4 +1,0 @@
-Thing cbus:trigger:evbms01:net50:Heartbeat_Admin                       (cbus:network:evbms01:net50)     [ group=0 ]
-Thing cbus:trigger:evbms01:net100:Heartbeat_UG                         (cbus:network:evbms01:net100)     [ group=0 ]
-Thing cbus:trigger:evbms01:net101:Heartbeat_LG                         (cbus:network:evbms01:net101)     [ group=0 ]
-Thing cbus:trigger:evbms01:net200:Heartbeat_Auditorium                 (cbus:network:evbms01:net200)     [ group=0 ]

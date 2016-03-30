@@ -1,6 +1,0 @@
-Group Heartbeat       "Heartbeat"                 [ "home-group" ]
-
-Number    Heartbeat_Admin                     "Heartbeat Admin"                              (CBus,Heartbeat)                         { channel="cbus:trigger:evbms01:net50:Heartbeat_Admin:value" }
-Number    Heartbeat_UG                        "Heartbeat UG"                                 (CBus,Heartbeat)                         { channel="cbus:trigger:evbms01:net100:Heartbeat_UG:value" }
-Number    Heartbeat_LG                        "Heartbeat LG"                                 (CBus,Heartbeat)                         { channel="cbus:trigger:evbms01:net101:Heartbeat_LG:value" }
-Number    Heartbeat_Auditorium                "Heartbeat Auditorium"                         (CBus,Heartbeat)                         { channel="cbus:trigger:evbms01:net200:Heartbeat_Auditorium:value" }
