@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.cbus.internal.discovery;
 
 import java.util.ArrayList;
@@ -18,6 +25,12 @@ import org.openhab.binding.cbus.internal.cgate.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link CBusGroupDiscovery} class is used to discover CBus
+ * groups that are in the CBus Network
+ *
+ * @author Scott Linton - Initial contribution
+ */
 public class CBusGroupDiscovery extends AbstractDiscoveryService {
 
     private final static Logger logger = LoggerFactory.getLogger(CBusGroupDiscovery.class);
@@ -28,10 +41,6 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
         super(CBusBindingConstants.SUPPORTED_THING_TYPES_UIDS, 300, false);
         this.cbusNetworkHandler = cbusNetworkHandler;
     }
-
-    // public CBusNetworkDiscovery() {
-    // super(CBusBindingConstants.SUPPORTED_THING_TYPES_UIDS, 10, true);
-    // }
 
     @Override
     protected void startScan() {
@@ -53,7 +62,7 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                     }
                     ArrayList<Group> groups = application.getGroups(false);
                     for (Group group : groups) {
-                        logger.info("Found group: {} {} {}", application.getName(), group.getGroupID(),
+                        logger.debug("Found group: {} {} {}", application.getName(), group.getGroupID(),
                                 group.getName());
                         Map<String, Object> properties = new HashMap<>(2);
                         properties.put(CBusBindingConstants.CONFIG_GROUP_ID, group.getGroupID());
@@ -73,25 +82,6 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                 logger.error("Failed to discover groups", e);
             }
         }
-
-        // if (cbusNetworkHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-        // CGateCommandSocket commandSocket = cbusNetworkHandler.getBridgeHandler().getCommandSocket();
-        // // Retrieve list of networks from CGate
-        // Map<Integer, String> groups = commandSocket.listGroups(cbusNetworkHandler.getNetworkID(), 56);
-        // for (Map.Entry<Integer, String> group : groups.entrySet()) {
-        // logger.info("Found Group: {} {}", group.getKey(), group.getValue());
-        // Map<String, Object> properties = new HashMap<>(2);
-        // properties.put(CBusBindingConstants.CONFIG_GROUP_ID, group.getKey());
-        // properties.put(CBusBindingConstants.PROPERTY_NETWORK_NAME, group.getValue());
-        // ThingUID uid = new ThingUID(CBusBindingConstants.THING_TYPE_GROUP, group.getKey().toString());
-        // if (uid != null) {
-        // DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-        // .withLabel("C-Bus Group " + group.getKey() + " - " + group.getValue())
-        // .withBridge(cbusNetworkHandler.getThing().getUID()).build();
-        // thingDiscovered(result);
-        // }
-        // }
-        // }
     }
 
     @Override
@@ -114,19 +104,5 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
     public void deactivate() {
         // cgateHandler.unregisterDiscoveryService();
     }
-
-    // private void discoveryResultSubmission(String network) {
-    // if (network != null) {
-    // logger.info("Adding new C-Bus Network {} to Smarthome inbox", network);
-    // Map<String, Object> properties = new HashMap<>(2);
-    // properties.put(CBusBindingConstants.PROPERTY_NETWORK_ID, network);
-    // ThingUID uid = new ThingUID(CBusBindingConstants.THING_TYPE_GROUP, network);
-    // if (uid != null) {
-    // DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-    // .withLabel("C-Bus Group " + network).withBridge(cbusNetworkHandler.getThing().getUID()).build();
-    // thingDiscovered(result);
-    // }
-    // }
-    // }
 
 }

@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.cbus.internal.discovery;
 
 import java.util.ArrayList;
@@ -16,6 +23,12 @@ import org.openhab.binding.cbus.internal.cgate.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link CBusNetworkDiscovery} class is used to discover CBus
+ * networks that are in the CBus Project
+ *
+ * @author Scott Linton - Initial contribution
+ */
 public class CBusNetworkDiscovery extends AbstractDiscoveryService {
 
     private final static Logger logger = LoggerFactory.getLogger(CBusNetworkDiscovery.class);
@@ -33,7 +46,7 @@ public class CBusNetworkDiscovery extends AbstractDiscoveryService {
             try {
                 ArrayList<Network> networks = Network.listAll(cBusCGateHandler.getCGateSession(), false);
                 for (Network network : networks) {
-                    logger.info("Found Network: {} {}", network.getNetworkID(), network.getName());
+                    logger.debug("Found Network: {} {}", network.getNetworkID(), network.getName());
                     Map<String, Object> properties = new HashMap<>(2);
                     properties.put(CBusBindingConstants.PROPERTY_ID, network.getNetworkID());
                     properties.put(CBusBindingConstants.PROPERTY_NAME, network.getName());
@@ -55,25 +68,6 @@ public class CBusNetworkDiscovery extends AbstractDiscoveryService {
             }
 
         }
-
-        // if (cgateHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-        // CGateCommandSocket commandSocket = cgateHandler.getCommandSocket();
-        // // Retrieve list of networks from CGate
-        // Map<Integer, String> networks = commandSocket.listNetworks();
-        // for (Map.Entry<Integer, String> network : networks.entrySet()) {
-        // logger.info("Found Network: {} {}", network.getKey(), network.getValue());
-        // Map<String, Object> properties = new HashMap<>(2);
-        // properties.put(CBusBindingConstants.PROPERTY_NETWORK_ID, network.getKey());
-        // properties.put(CBusBindingConstants.PROPERTY_NETWORK_NAME, network.getValue());
-        // ThingUID uid = new ThingUID(CBusBindingConstants.BRIDGE_TYPE_NETWORK, network.getKey().toString());
-        // if (uid != null) {
-        // DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-        // .withLabel("C-Bus Network " + network.getKey() + " - " + network.getValue())
-        // .withBridge(cgateHandler.getThing().getUID()).build();
-        // thingDiscovered(result);
-        // }
-        // }
-        // }
     }
 
     @Override

@@ -36,7 +36,7 @@ public class CBusTriggerHandler extends CBusGroupHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_VALUE)) {
-            logger.info("Channel command {}: {}", channelUID.getAsString(), command.toString());
+            logger.debug("Channel command {}: {}", channelUID.getAsString(), command.toString());
             try {
                 if (command instanceof OnOffType) {
                     if (command.equals(OnOffType.ON)) {
