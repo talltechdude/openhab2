@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,6 +20,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageTy
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,9 +78,12 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
 
     /**
      * {@inheritDoc}
+     *
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         logger.debug("NODE {}: Received Alarm Request", this.getNode().getNodeId());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
@@ -89,7 +93,7 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
 
                 int alarmTypeCode = serialMessage.getMessagePayloadByte(offset + 1);
                 int value = serialMessage.getMessagePayloadByte(offset + 2);
-                int source = 0;
+                int sensor = 0;
                 int event = 0;
                 int status = 0;
 
@@ -102,11 +106,11 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
                 if (version == 1) {
                     logger.debug("NODE {}: Alarm report - {} = {}", this.getNode().getNodeId(), alarmTypeCode, value);
                 } else {
-                    source = serialMessage.getMessagePayloadByte(offset + 3);
+                    sensor = serialMessage.getMessagePayloadByte(offset + 3);
                     event = serialMessage.getMessagePayloadByte(offset + 6);
                     status = serialMessage.getMessagePayloadByte(offset + 4);
-                    logger.debug("NODE {}: Alarm report - {} = {}, source={}, event={}, status={}",
-                            this.getNode().getNodeId(), alarmTypeCode, value, source, event, status);
+                    logger.debug("NODE {}: Alarm report - {} = {}, sensor={}, event={}, status={}",
+                            this.getNode().getNodeId(), alarmTypeCode, value, sensor, event, status);
                 }
 
                 AlarmType alarmType = AlarmType.getAlarmType(alarmTypeCode);
@@ -430,6 +434,7 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
 
     @Override
     public boolean setOptions(Map<String, String> options) {
+        // TODO: False logic!
         if ("true".equals(options.get("getSupported"))) {
             isGetSupported = true;
         }

@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="fibaro_fgbs001_00_000">
+
+  <thing-type id="fibaro_fgbs001_00_000" listed="false">
     <label>FGBS001 Universal Binary Sensor</label>
     <description>Universal Binary Sensor</description>
 
@@ -22,34 +23,46 @@
           <property name="binding:*:OnOffType">SENSOR_BINARY:1</property>
         </properties>
       </channel>
+      <channel id="alarm_general1" typeId="alarm_general">
+        <label>Alarm 1</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM:1,BASIC:1</property>
+        </properties>
+      </channel>
       <channel id="sensor_binary2" typeId="sensor_binary">
         <label>Binary Sensor 2</label>
         <properties>
           <property name="binding:*:OnOffType">SENSOR_BINARY:2</property>
         </properties>
       </channel>
+      <channel id="alarm_general2" typeId="alarm_general">
+        <label>Alarm 2</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM:2,BASIC:2</property>
+        </properties>
+      </channel>
       <channel id="sensor_temperature3" typeId="sensor_temperature">
         <label>Sensor (temperature 1)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:3;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:3;type=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="sensor_temperature4" typeId="sensor_temperature">
         <label>Sensor (temperature 2)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:4;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:4;type=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="sensor_temperature5" typeId="sensor_temperature">
         <label>Sensor (temperature 3)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:5;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:5;type=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="sensor_temperature6" typeId="sensor_temperature">
         <label>Sensor (temperature 4)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:6;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:6;type=TEMPERATURE</property>
         </properties>
       </channel>
     </channels>
@@ -60,7 +73,7 @@
       <property name="model">FGBS001</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0501:0102,0501:1002,0501:3002</property>
-      <property name="DefaultAssociations">3</property>
+      <property name="defaultAssociations">3</property>
     </properties>
 
     <config-description>

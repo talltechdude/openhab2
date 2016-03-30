@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.zwave.discovery;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -73,11 +72,11 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
 
         // Add all existing devices
         for (ZWaveNode node : controllerHandler.getNodes()) {
-            if (node.getManufacturer() == Integer.MAX_VALUE) {
-                // deviceDiscovered(node.getNodeId());
-            } else {
-                deviceAdded(node);
-            }
+            // if (node.getManufacturer() == Integer.MAX_VALUE) {
+            // deviceDiscovered(node.getNodeId());
+            // } else {
+            deviceAdded(node);
+            // }
         }
 
         // Start the search for new devices
@@ -141,7 +140,7 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
 
         ThingUID bridgeUID = controllerHandler.getThing().getUID();
 
-        ThingUID thingUID = new ThingUID(new ThingTypeUID(ZWaveBindingConstants.UNKNOWN_THING), bridgeUID,
+        ThingUID thingUID = new ThingUID(new ThingTypeUID(ZWaveBindingConstants.ZWAVE_THING), bridgeUID,
                 String.format("node%d", nodeId));
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
@@ -150,19 +149,18 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
         thingDiscovered(discoveryResult);
     }
 
-    public ThingUID deviceAdded(ZWaveNode node) {
+    public void deviceAdded(ZWaveNode node) {
         // Don't add the controller as a thing
         if (controllerHandler.getOwnNodeId() == node.getNodeId()) {
-            return null;
+            return;
         }
-
         logger.debug("NODE {}: Device discovery completed", node.getNodeId());
 
-        if (node.getManufacturer() == Integer.MAX_VALUE || node.getDeviceId() == Integer.MAX_VALUE
-                || node.getDeviceType() == Integer.MAX_VALUE) {
-            logger.debug("NODE {}: Device discovery aborted - device information not yet known.", node.getNodeId());
-            return null;
-        }
+        // if (node.getManufacturer() == Integer.MAX_VALUE || node.getDeviceId() == Integer.MAX_VALUE
+        // || node.getDeviceType() == Integer.MAX_VALUE) {
+        // logger.debug("NODE {}: Device discovery aborted - device information not yet known.", node.getNodeId());
+        // return null;
+        // }
 
         ThingUID bridgeUID = controllerHandler.getThing().getUID();
 
@@ -179,44 +177,56 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
         }
 
         // Remove the temporary thing
-        String thingId = "node" + node.getNodeId();
-        ThingUID thingUID = null;// new ThingUID(new ThingTypeUID(ZWaveBindingConstants.UNKNOWN_THING), bridgeUID,
-                                 // thingId);
+        // String thingId = "node" + node.getNodeId();
+        // ThingUID thingUID = null;// new ThingUID(new ThingTypeUID(ZWaveBindingConstants.UNKNOWN_THING), bridgeUID,
+        // thingId);
         // thingRemoved(thingUID);
 
         // If we didn't find the product, then add the unknown thing
+        String label = String.format("Z-Wave Node %d", node.getNodeId());
         if (foundProduct == null) {
             logger.warn("NODE {}: Device could not be resolved to a thingType! {}:{}:{}::{}", node.getNodeId(),
                     String.format("%04X", node.getManufacturer()), String.format("%04X", node.getDeviceType()),
                     String.format("%04X", node.getDeviceId()), node.getApplicationVersion());
 
-            thingUID = new ThingUID(new ThingTypeUID(ZWaveBindingConstants.UNKNOWN_THING), bridgeUID,
-                    String.format("node%d", node.getNodeId()));
-
-            String label = String.format("Node %d (%04X:%04X:%04X:%s)", node.getNodeId(), node.getManufacturer(),
-                    node.getDeviceType(), node.getDeviceId(), node.getApplicationVersion());
-
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                    .withLabel(label).build();
-
-            thingDiscovered(discoveryResult);
-
-            return null;
+            if (node.getManufacturer() != Integer.MAX_VALUE) {
+                label += String.format(" (%04X:%04X:%04X:%s)", node.getManufacturer(), node.getDeviceType(),
+                        node.getDeviceId(), node.getApplicationVersion());
+            }
+        } else {
+            // And create the new thing
+            ThingType thingType = ZWaveConfigProvider.getThingType(foundProduct.getThingTypeUID());
+            label += String.format(": %s", thingType.getLabel());
         }
 
-        // And create the new thing
-        thingUID = new ThingUID(foundProduct.getThingTypeUID(), bridgeUID, thingId);
-        ThingType thingType = ZWaveConfigProvider.getThingType(foundProduct.getThingTypeUID());
-        String label = String.format("Node %d: %s", node.getNodeId(), thingType.getLabel());
+        // Add some device properties that might be useful for the system to know
+        Map<String, Object> properties = new HashMap<>(11);
+        properties.put(ZWaveBindingConstants.PROPERTY_NODEID, Integer.toString(node.getNodeId()));
 
-        Map<String, Object> properties = new HashMap<>(1);
-        properties.put(ZWaveBindingConstants.PROPERTY_NODEID, BigDecimal.valueOf(node.getNodeId()));
+        properties.put(ZWaveBindingConstants.PROPERTY_MANUFACTURER, Integer.toString(node.getManufacturer()));
+        properties.put(ZWaveBindingConstants.PROPERTY_DEVICETYPE, Integer.toString(node.getDeviceType()));
+        properties.put(ZWaveBindingConstants.PROPERTY_DEVICEID, Integer.toString(node.getDeviceId()));
+        properties.put(ZWaveBindingConstants.PROPERTY_VERSION, node.getApplicationVersion());
+
+        properties.put(ZWaveBindingConstants.PROPERTY_CLASS_BASIC,
+                node.getDeviceClass().getBasicDeviceClass().toString());
+        properties.put(ZWaveBindingConstants.PROPERTY_CLASS_GENERIC,
+                node.getDeviceClass().getGenericDeviceClass().toString());
+        properties.put(ZWaveBindingConstants.PROPERTY_CLASS_SPECIFIC,
+                node.getDeviceClass().getSpecificDeviceClass().toString());
+        properties.put(ZWaveBindingConstants.PROPERTY_LISTENING, Boolean.toString(node.isListening()));
+        properties.put(ZWaveBindingConstants.PROPERTY_FREQUENT, Boolean.toString(node.isFrequentlyListening()));
+        properties.put(ZWaveBindingConstants.PROPERTY_BEAMING, Boolean.toString(node.isBeaming()));
+        properties.put(ZWaveBindingConstants.PROPERTY_ROUTING, Boolean.toString(node.isRouting()));
+
+        ThingUID thingUID = new ThingUID(new ThingTypeUID(ZWaveBindingConstants.ZWAVE_THING), bridgeUID,
+                String.format("node%d", node.getNodeId()));
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withBridge(bridgeUID).withLabel(label).build();
 
         thingDiscovered(discoveryResult);
 
-        return thingUID;
+        return;
     }
 
     public void deviceRemoved(ZWaveNode node) {

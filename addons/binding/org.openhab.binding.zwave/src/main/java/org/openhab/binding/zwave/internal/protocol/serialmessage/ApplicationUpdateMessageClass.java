@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNodeState;
@@ -36,7 +37,7 @@ public class ApplicationUpdateMessageClass extends ZWaveCommandProcessor {
 
     @Override
     public boolean handleRequest(ZWaveController zController, SerialMessage lastSentMessage,
-            SerialMessage incomingMessage) {
+            SerialMessage incomingMessage) throws ZWaveSerialMessageException {
         int nodeId;
         boolean result = true;
         UpdateState updateState = UpdateState.getUpdateState(incomingMessage.getMessagePayloadByte(0));
@@ -92,9 +93,16 @@ public class ApplicationUpdateMessageClass extends ZWaveCommandProcessor {
                             break;
                         }
                         logger.trace(String.format("NODE %d: Command class 0x%02X is supported.", nodeId, data));
-                        ZWaveCommandClass commandClass = ZWaveCommandClass.getInstance(data, node, zController);
-                        if (commandClass != null) {
-                            node.addCommandClass(commandClass);
+                        // Ensure the command class doesn't already exists on the node
+                        CommandClass commandClass = CommandClass.getCommandClass(data);
+                        if (node.getCommandClass(commandClass) == null) { // add it
+                            ZWaveCommandClass zwaveCommandClass = ZWaveCommandClass.getInstance(data, node,
+                                    zController);
+                            if (zwaveCommandClass != null) {
+                                logger.debug("NODE {}: Application update is adding command class {}.", nodeId,
+                                        commandClass);
+                                node.addCommandClass(zwaveCommandClass);
+                            }
                         }
                     }
 

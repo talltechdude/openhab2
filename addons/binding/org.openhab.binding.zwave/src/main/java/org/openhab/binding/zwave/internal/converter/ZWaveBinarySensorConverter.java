@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,14 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zwave.handler.ZWaveThingHandler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveBinarySensorCommandClass;
-import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveBinarySensorCommandClass.SensorType;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveBinarySensorCommandClass.ZWaveBinarySensorValueEvent;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,20 +69,29 @@ public class ZWaveBinarySensorConverter extends ZWaveCommandClassConverter {
      */
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
-        logger.debug("ZWaveBinarySensorValueEvent 1");
+        // logger.debug("ZWaveBinarySensorValueEvent 1");
 
-        String sensorType = channel.getArguments().get("sensorType");
-        logger.debug("ZWaveBinarySensorValueEvent 2");
+        String sensorType = channel.getArguments().get("type");
+        // logger.debug("ZWaveBinarySensorValueEvent 2");
         ZWaveBinarySensorValueEvent sensorEvent = (ZWaveBinarySensorValueEvent) event;
-        logger.debug("ZWaveBinarySensorValueEvent 3");
+        // logger.debug("ZWaveBinarySensorValueEvent 3");
 
         // Don't trigger event if this item is bound to another alarm type
         if (sensorType != null && SensorType.valueOf(sensorType) != sensorEvent.getSensorType()) {
-            logger.debug("ZWaveBinarySensorValueEvent 4");
+            // logger.debug("ZWaveBinarySensorValueEvent 4");
             return null;
         }
 
-        logger.debug("ZWaveBinarySensorValueEvent 5");
-        return sensorEvent.getValue() == 0 ? OnOffType.OFF : OnOffType.ON;
+        switch (channel.getDataType()) {
+            case OnOffType:
+                return sensorEvent.getValue() == 0 ? OnOffType.OFF : OnOffType.ON;
+            case OpenClosedType:
+                return sensorEvent.getValue() == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+            default:
+                logger.debug("Unknwon data type {} for BinarySensor", channel.getDataType());
+                break;
+        }
+
+        return null;
     }
 }
