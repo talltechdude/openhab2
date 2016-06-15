@@ -15,7 +15,9 @@
             <channel id="mode" typeId="mode"/>
             <channel id="fan_mode" typeId="fan_mode"/>
             <channel id="indoor_temp" typeId="current_temp"/>
+            <channel id="indoor_hum" typeId="current_hum"/>
             <channel id="outdoor_temp" typeId="current_temp"/>
+            <channel id="outdoor_hum" typeId="current_hum"/>
             <channel id="compressor_mode" typeId="compressor_mode"/>
             <channel id="compressor_stage" typeId="compressor_stage"/>
             <channel id="override_timer" typeId="override_timer"/>
@@ -34,7 +36,32 @@
             <parameter name="refresh" type="integer">
                 <label>Refresh interval</label>
                 <description>Specifies the refresh interval in seconds</description>
+                <default>10</default>
+            </parameter>
+            
+            <parameter name="timeout" type="integer">
+                <label>Connection Timeout</label>
+                <description>Specifies the connection timeout in seconds</description>
                 <default>20</default>
+            </parameter>            
+            
+            <parameter name="username" type="text">
+                <label>Username</label>
+                <description>Web config username</description>
+                <default>admin</default>
+            </parameter>
+            
+            <parameter name="password" type="text">
+                <context>password</context>
+                <label>Password</label>
+                <description>Web config password</description>
+                <default>netx</default>
+            </parameter>
+            
+            <parameter name="readonly" type="boolean">
+                <label>Read-Only</label>
+                <description>Only read status and never write status back to device</description>
+                <default>false</default>
             </parameter>
         </config-description>
     </thing-type>
@@ -79,9 +106,17 @@
     <channel-type id="current_temp">
         <item-type>Number</item-type>
         <label>Current Temperature</label>
-        <description>Current measured room temperature</description>
+        <description>Current measured temperature</description>
         <category>Temperature</category>
         <state readOnly="true" pattern="%d °C" />
+    </channel-type>
+    
+    <channel-type id="current_hum">
+        <item-type>Number</item-type>
+        <label>Current Humidity</label>
+        <description>Current measured humidity</description>
+        <category>Humidity</category>
+        <state readOnly="true" pattern="%d %%" />
     </channel-type>
     
     <channel-type id="compressor_mode">

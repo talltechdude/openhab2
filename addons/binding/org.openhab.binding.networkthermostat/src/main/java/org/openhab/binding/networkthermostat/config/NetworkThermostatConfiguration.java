@@ -1,13 +1,19 @@
 package org.openhab.binding.networkthermostat.config;
 
-public class NetworkThermostatConfiguration {
-    public static final String FRIENDLY_NAME = "friendlyName";
-    public static final String IP_ADDRESS = "ipAddress";
-    public static final String MODEL = "model";
-    public static final Object REFRESH = "refresh";
+import java.math.BigDecimal;
 
-    public String friendlyName;
+public class NetworkThermostatConfiguration {
+    public static final String IP_ADDRESS = "ipAddress";
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
+    public static final String REFRESH = "refresh";
+    public static final String TIMEOUT = "timeout";
+    public static final String READONLY = "readonly";
+
     public String ipAddress;
-    public String model;
-    public Integer refresh;
+    public String username;
+    public String password;
+    public BigDecimal refresh;
+    public BigDecimal timeout;
+    public Boolean readonly;
 }

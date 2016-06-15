@@ -29,7 +29,9 @@ public class NetworkThermostatBindingConstants {
     public final static String CHANNEL_MODE = "mode";
     public final static String CHANNEL_FAN_MODE = "fan_mode";
     public final static String CHANNEL_INDOOR_TEMP = "indoor_temp";
+    public final static String CHANNEL_INDOOR_HUM = "indoor_hum";
     public final static String CHANNEL_OUTDOOR_TEMP = "outdoor_temp";
+    public final static String CHANNEL_OUTDOOR_HUM = "outdoor_hum";
     public final static String CHANNEL_COMPRESSOR_MODE = "compressor_mode";
     public final static String CHANNEL_COMPRESSOR_STAGE = "compressor_stage";
     public final static String CHANNEL_OVERRIDE_TIMER = "override_timer";

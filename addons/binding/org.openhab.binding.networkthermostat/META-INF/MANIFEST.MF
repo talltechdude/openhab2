@@ -15,7 +15,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.core.library.types,
  org.openhab.io.net.http,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
