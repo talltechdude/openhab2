@@ -92,9 +92,8 @@ public class NetworkThermostatHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Error connecting to web interface - check network address / username / password");
                 return;
-            } else {
-                updateStatus(ThingStatus.ONLINE);
             }
+            updateStatus(ThingStatus.ONLINE);
             connection.disconnect();
 
             /*
@@ -283,7 +282,7 @@ public class NetworkThermostatHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.INITIALIZING);
+        // updateStatus(ThingStatus.INITIALIZING);
         logger.debug("Initializing Network Thermostat handler.");
         this.configuration = getConfigAs(NetworkThermostatConfiguration.class);
         logger.debug("Network Thermostat IP {}.", configuration.ipAddress);
@@ -310,6 +309,9 @@ public class NetworkThermostatHandler extends BaseThingHandler {
             refreshInterval = this.configuration.refresh.toBigInteger().intValue();
         }
         logger.debug("Starting polling job with refresh interval of " + refreshInterval + " seconds");
+        if (pollingJob != null && !pollingJob.isCancelled()) {
+            pollingJob.cancel(true);
+        }
         pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, (int) (refreshInterval * Math.random()),
                 refreshInterval, TimeUnit.SECONDS);
 
